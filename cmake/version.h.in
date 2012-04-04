@@ -1,0 +1,8 @@
+#ifdef DEBUG
+  #define NAME "@PROJECT_NAME@ (debug)"
+#else
+  #define NAME "@PROJECT_NAME@"
+#endif
+
+#define VERSION "@VERSION@"
+#define HUMAN_NAME NAME " v" VERSION " (" __DATE__ ")"
