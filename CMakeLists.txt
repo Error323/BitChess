@@ -37,5 +37,23 @@ configure_file(
 include(${PROJECT_SOURCE_DIR}/cmake/sources.cmake)
 include_directories(${PROJECT_BINARY_DIR})
 
+# === Set cmake 3rd library modules path
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
+
+# === Find Dependencies.
+find_package(CppUnit REQUIRED)
+
+# === Include directories
+include_directories(${CPPUNIT_INCLUDE_DIR})
+
+# === Add all tests
+enable_testing()
+foreach(TEST ${TESTS})
+  add_executable(${TEST} ${${TEST}_SOURCES})
+  target_link_libraries(${TEST} ${CPPUNIT_LIBRARIES})
+  add_test(${TEST} ${TEST})
+endforeach(TEST)
+
+
 # === Create the emulator binary.
 add_executable(${PROJECT_NAME} ${SOURCES})
