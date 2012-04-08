@@ -30,7 +30,7 @@ public:
   Pair AlphaBeta(State *inState, int inMaxPly);
 
   /// Minimax algorithm, with alpha beta pruning and search window
-  //Pair Negascout(State *inState, int inMaxPly);
+  Pair Negascout(State *inState, int inMaxPly);
 
 private:
   int mStatesVisited; ///< Number of states traversed
@@ -42,7 +42,7 @@ private:
   Value AlphaBetaValue(State *inState, int inMaxPly, int inAlpha, int inBeta);
 
   /// Recursive subfunction
-  //Value NegascoutValue(State *inState, int inMaxPly, int inAlpha, int inBeta);
+  Value NegascoutValue(State *inState, int inMaxPly, int inAlpha, int inBeta);
 };
 
 } // namespace asearch

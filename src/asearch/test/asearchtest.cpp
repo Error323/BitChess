@@ -44,21 +44,29 @@ void ASearchTest::test_create()
 
   while (!game_state.IsTerminal())
   {
-    Pair A, B;
+    Pair A, B, C;
     int max_depth = 9 - turn;
     if (turn % 2 == 0)
     {
       A = mAI->Minimax(&game_state, max_depth);
       B = mAI->AlphaBeta(&game_state, max_depth);
+      C = mAI->Negascout(&game_state, max_depth);
+
       CPPUNIT_ASSERT_EQUAL(A.first, B.first);
       CPPUNIT_ASSERT_EQUAL(A.second, B.second);
+      CPPUNIT_ASSERT_EQUAL(A.first, C.first);
+      CPPUNIT_ASSERT_EQUAL(A.second, C.second);
     }
     else
     {
-      A = mAI->Minimax(&game_state, 2);
-      B = mAI->AlphaBeta(&game_state, 2);
+      A = mAI->Minimax(&game_state, 3);
+      B = mAI->AlphaBeta(&game_state, 3);
+      C = mAI->Negascout(&game_state, 3);
+
       CPPUNIT_ASSERT_EQUAL(A.first, B.first);
       CPPUNIT_ASSERT_EQUAL(A.second, B.second);
+      CPPUNIT_ASSERT_EQUAL(A.first, C.first);
+      CPPUNIT_ASSERT_EQUAL(A.second, C.second);
     }
     game_state.MakeMove(A.second);
     std::cout << "Turn: " << turn << std::endl;
