@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <cassert>
+#include <iostream>
 
 namespace asearch {
 
@@ -16,6 +17,7 @@ ASearch::~ASearch() {}
 //------------------------------------------------------------------------------
 Pair ASearch::Minimax(State *inState, int inMaxPly)
 {
+  mStatesVisited = 0;
   Pair best = std::make_pair<Value, Move>(-INF, -1);
 
   std::vector<Move> moves = inState->GetLegalMoves();
@@ -31,7 +33,7 @@ Pair ASearch::Minimax(State *inState, int inMaxPly)
       best.second = moves[i];
     }
   }
-
+  std::cout << "Minimax states visited:   " << mStatesVisited << std::endl;
   assert(best.second != -1);
   return best;
 }
@@ -40,6 +42,8 @@ Value ASearch::MinimaxValue(State *inState, int inMaxPly)
 {
   if (inMaxPly == 0 || inState->IsTerminal())
     return inState->GetScore();
+
+  mStatesVisited++;
 
   Value best = -INF;
   std::vector<Move> moves = inState->GetLegalMoves();
@@ -61,6 +65,7 @@ Value ASearch::MinimaxValue(State *inState, int inMaxPly)
 //------------------------------------------------------------------------------
 Pair ASearch::AlphaBeta(State *inState, int inMaxPly)
 {
+  mStatesVisited = 0;
   Pair best = std::make_pair<Value, Move>(-INF, -1);
 
   std::vector<Move> moves = inState->GetLegalMoves();
@@ -76,7 +81,7 @@ Pair ASearch::AlphaBeta(State *inState, int inMaxPly)
       best.second = moves[i];
     }
   }
-
+  std::cout << "Alphabeta states visited: " << mStatesVisited << std::endl;
   assert(best.second != -1);
   return best;
 }
@@ -86,6 +91,8 @@ Value ASearch::AlphaBetaValue(State *inState, int inMaxPly, int inAlpha,
 {
   if (inMaxPly == 0 || inState->IsTerminal())
     return inState->Quiescence(inAlpha, inBeta);
+
+  mStatesVisited++;
 
   std::vector<Move> moves = inState->GetLegalMoves();
   for (int i = 0, n = moves.size(); i < n; i++)

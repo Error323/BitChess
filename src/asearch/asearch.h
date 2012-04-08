@@ -33,6 +33,8 @@ public:
   //Pair Negascout(State *inState, int inMaxPly);
 
 private:
+  int mStatesVisited; ///< Number of states traversed
+
   /// Recursive subfunction
   Value MinimaxValue(State *inState, int inMaxPly);
 

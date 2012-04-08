@@ -39,38 +39,42 @@ const static int moves[9] = {
 void ASearchTest::test_create()
 {
   std::cout << std::endl;
-
   TTTState game_state;
   int turn = 0;
+
   while (!game_state.IsTerminal())
   {
-    Pair val_move;
+    Pair A, B;
+    int max_depth = 9 - turn;
     if (turn % 2 == 0)
-      val_move = mAI1->Minimax(&game_state, 9-turn);
+    {
+      A = mAI->Minimax(&game_state, max_depth);
+      B = mAI->AlphaBeta(&game_state, max_depth);
+      CPPUNIT_ASSERT_EQUAL(A.first, B.first);
+      CPPUNIT_ASSERT_EQUAL(A.second, B.second);
+    }
     else
     {
-      std::cin >> val_move.second;
-      if (!game_state.IsLegalMove(val_move.second))
-      {
-        std::cout << "Illegal move: " << val_move.second << std::endl;
-        continue;
-      }
+      A = mAI->Minimax(&game_state, 2);
+      B = mAI->AlphaBeta(&game_state, 2);
+      CPPUNIT_ASSERT_EQUAL(A.first, B.first);
+      CPPUNIT_ASSERT_EQUAL(A.second, B.second);
     }
-    game_state.MakeMove(val_move.second);
-    std::cout << "\nTurn: " << turn << std::endl;
-    std::cout << game_state.ToString();
+    game_state.MakeMove(A.second);
+    std::cout << "Turn: " << turn << std::endl;
+    std::cout << game_state.ToString() << std::endl << std::endl;
     turn++;
   }
 }
 
 void ASearchTest::setUp()
 {
-  mAI1 = new ASearch();
+  mAI = new ASearch();
 }
 
 void ASearchTest::tearDown()
 {
-  delete mAI1;
+  delete mAI;
 }
 
 TTTState::TTTState()
@@ -82,9 +86,13 @@ TTTState::TTTState()
 
 bool TTTState::IsLegalMove(Move inMove)
 {
+  if (inMove < 0 || inMove > 8)
+    return false;
+
   unsigned short empty = ~(mBoard[CROSS] | mBoard[CIRCLE]);
   if (((empty >> inMove) & 1) == 1)
     return true;
+
   return false;
 }
 
@@ -165,32 +173,8 @@ int TTTState::Quiescence(int inAlpha, int inBeta)
 {
   (void) inAlpha;
   (void) inBeta;
-  return 0;
+  return GetScore();
 }
-
-/*
-void TTTState::Print(int inDepth, int inScore)
-{
-  for (int i = 0; i < 2-inDepth; i++)
-    std::cout << " ";
-
-  for (int i = 0; i < 3; i++)
-  {
-    unsigned char circles = mBoard[CIRCLE] >> ((i*3) & 0xf);
-    unsigned char crosses = mBoard[CROSS] >> ((i*3) & 0xf);
-    for (int j = 0; j < 3; j++)
-    {
-      if (((circles >> j) & 1) == 1)
-        std::cout << " o";
-      else if (((crosses >> j) & 1) == 1)
-        std::cout << " x";
-      else
-        std::cout << " .";// << i*3+j;
-    }
-  }
-  std::cout << " S: " << inScore << std::endl;
-}
-*/
 
 std::string TTTState::ToString()
 {

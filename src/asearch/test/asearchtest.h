@@ -53,8 +53,7 @@ public:
   void test_create();
 
 private:
-  ASearch *mAI1;
-  ASearch *mAI2;
+  ASearch *mAI;
 };
 
 } // namespace asearch

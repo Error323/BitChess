@@ -6,9 +6,9 @@ set(SOURCES
 )
 
 # === Test sources
-set(TESTS asearch)
+set(TESTS asearchtest)
 
-set(asearch_SOURCES
+set(asearchtest_SOURCES
   src/asearch/state.h
   src/asearch/asearch.cpp
   src/asearch/test/asearchtest.cpp
