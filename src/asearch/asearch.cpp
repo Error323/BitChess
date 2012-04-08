@@ -4,8 +4,6 @@
 #include "../utils/verbose.h"
 
 #include <vector>
-#include <cassert>
-#include <iostream>
 
 namespace asearch {
 
