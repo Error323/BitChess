@@ -8,6 +8,11 @@ set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -DDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g -DDEBUG")
 
+set(ENABLE_PROFILING FALSE CACHE BOOL "Enable/Disable profiling")
+if(ENABLE_PROFILING)
+  add_definitions(-DENABLE_PROFILING)
+endif(ENABLE_PROFILING)
+
 # === Project version
 execute_process(
   COMMAND git describe --tags

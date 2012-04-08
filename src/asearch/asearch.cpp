@@ -1,6 +1,8 @@
 #include "asearch.h"
 #include "state.h"
 
+#include "../utils/verbose.h"
+
 #include <vector>
 #include <cassert>
 #include <iostream>
@@ -34,8 +36,10 @@ Pair ASearch::Minimax(State *inState, int inMaxPly)
       best.second = moves[i];
     }
   }
-  std::cout << "Minimax states visited:   " << mStatesVisited << std::endl;
-  assert(best.second != -1);
+  DebugLine("Minimax states visited:   " << mStatesVisited);
+
+  if (best.second == -1)
+    FatalLine("Invalid move returned.");
   return best;
 }
 
@@ -83,8 +87,10 @@ Pair ASearch::AlphaBeta(State *inState, int inMaxPly)
       best.second = moves[i];
     }
   }
-  std::cout << "Alphabeta states visited: " << mStatesVisited << std::endl;
-  assert(best.second != -1);
+  DebugLine("AlphaBeta states visited: " << mStatesVisited);
+
+  if (best.second == -1)
+    FatalLine("Invalid move returned.");
   return best;
 }
 
@@ -139,8 +145,10 @@ Pair ASearch::Negascout(State *inState, int inMaxPly)
     }
     beta = best.first + 1;
   }
-  std::cout << "Negascout states visited: " << mStatesVisited << std::endl;
-  assert(best.second != -1);
+  DebugLine("Negascout states visited: " << mStatesVisited);
+
+  if (best.second == -1)
+    FatalLine("Invalid move returned.");
   return best;
 }
 

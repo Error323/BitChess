@@ -30,10 +30,10 @@ const static unsigned short win_positions[8] = {
   0x54   // diagonal 2
 };
 
-const static int moves[9] = {
-  0, 1, 2,
-  3, 4, 5,
-  6, 7, 8
+const static unsigned short moves[9] = {
+  1<<0, 1<<1, 1<<2,
+  1<<3, 1<<4, 1<<5,
+  1<<6, 1<<7, 1<<8
 };
 
 void ASearchTest::test_create()
@@ -99,7 +99,7 @@ bool TTTState::IsLegalMove(Move inMove)
     return false;
 
   unsigned short empty = ~(mBoard[CROSS] | mBoard[CIRCLE]);
-  if (((empty >> inMove) & 1) == 1)
+  if ((empty & moves[inMove]) == moves[inMove])
     return true;
 
   return false;
@@ -120,14 +120,14 @@ bool TTTState::IsTerminal()
 
 void TTTState::MakeMove(Move inMove)
 {
-  mBoard[mSide] |= static_cast<unsigned short>(1 << moves[inMove]);
+  mBoard[mSide] |= moves[inMove];
   mSide = Type(1^mSide);
 }
 
 void TTTState::UndoMove(Move inMove)
 {
   mSide = Type(1^mSide);
-  mBoard[mSide] &= static_cast<unsigned short>(~(1 << moves[inMove]));
+  mBoard[mSide] &= ~(moves[inMove]);
 }
 
 std::vector<Move> TTTState::GetLegalMoves()
