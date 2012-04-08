@@ -1,27 +1,24 @@
 #ifndef STATE_H
 #define STATE_H
 
-#include <utility>
+#include "ttable.h"
+
 #include <vector>
 
 namespace asearch {
 
-typedef int Move; ///< Actual move (index to a move table)
-typedef int Value; ///< Minimax value
-typedef std::pair<Value, Move> Pair; ///< Minimax Value and corresponding Move
-
 /**
- * @interface State
+ * @abstract State
  *
  * @brief
- * State represents the game state.
- *
- * @details
- * Defines helper functions for ASearch
+ * State represents the game state
  */
-class State
+class State : public TTable
 {
 public:
+  State() {}
+  virtual ~State() {}
+
   /// Return all legal moves (indices to a move table defined elsewhere)
   virtual std::vector<Move> GetLegalMoves() = 0;
 
@@ -41,6 +38,6 @@ public:
   virtual Value Quiescence(int inAlpha, int inBeta) = 0;
 };
 
-}
+} // namespace asearch
 
 #endif // STATE_H

@@ -7,8 +7,6 @@
 
 namespace asearch {
 
-#define INF 100000
-
 ASearch::ASearch() {}
 ASearch::~ASearch() {}
 
@@ -33,7 +31,9 @@ Pair ASearch::Minimax(State *inState, int inMaxPly)
       best.first = val;
       best.second = moves[i];
     }
+    Debug(Uint32(moves[i])<<":"<<val<<" ");
   }
+  DebugLine("");
   DebugLine("Minimax states visited:   " << mStatesVisited);
 
   if (best.second == -1)
@@ -100,19 +100,34 @@ Value ASearch::AlphaBetaValue(State *inState, int inMaxPly, int inAlpha,
 
   mStatesVisited++;
 
+  Pair pair;
+  TTable::Flag flag = inState->Get(inMaxPly, 0, pair);
+  switch (flag)
+  {
+    case TTable::EXACT: return pair.first;
+//    case TTable::UPPERBOUND: inBeta = std::min<int>(inBeta, pair.first); break;
+    case TTable::LOWERBOUND: inAlpha = std::max<int>(inAlpha, pair.first); break;
+    default: break;
+  }
+
+  if (inAlpha >= inBeta)
+    return inAlpha;
+
   std::vector<Move> moves = inState->GetLegalMoves();
   for (int i = 0, n = moves.size(); i < n; i++)
   {
     inState->MakeMove(moves[i]);
-    Value val = -AlphaBetaValue(inState, inMaxPly - 1, -inBeta, -inAlpha);
+    pair.first = -AlphaBetaValue(inState, inMaxPly - 1, -inBeta, -inAlpha);
+    pair.second = moves[i];
     inState->UndoMove(moves[i]);
 
-    if (val >= inBeta)
-      return val;
+    inAlpha = std::max<int>(pair.first, inAlpha);
 
-    if (val > inAlpha)
-      inAlpha = val;
+    if (inAlpha >= inBeta)
+      break;
   }
+
+  inState->Put(inMaxPly, 0, inAlpha, inBeta, pair);
 
   return inAlpha;
 }

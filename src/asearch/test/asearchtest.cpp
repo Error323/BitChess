@@ -1,11 +1,12 @@
 #include "asearchtest.h"
 #include "../asearch.h"
 
+extern uint64_t Rand64();
+
 #include <iostream>
 #include <sstream>
 
-namespace asearch
-{
+using namespace asearch;
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ASearchTest);
 
@@ -18,8 +19,8 @@ ASearchTest::~ASearchTest()
 {
 }
 
-
-const static unsigned short win_positions[8] = {
+const static unsigned short win_positions[8] =
+{
   0x1C0, // row3
   0x38,  // row2
   0x7,   // row1
@@ -30,7 +31,8 @@ const static unsigned short win_positions[8] = {
   0x54   // diagonal 2
 };
 
-const static unsigned short moves[9] = {
+const static unsigned short moves[9] =
+{
   1<<0, 1<<1, 1<<2,
   1<<3, 1<<4, 1<<5,
   1<<6, 1<<7, 1<<8
@@ -39,40 +41,63 @@ const static unsigned short moves[9] = {
 void ASearchTest::test_create()
 {
   std::cout << std::endl;
-  TTTState game_state;
-  int turn = 0;
+  int hash_table_size = 1024*64;
+  int hash_codes = 18; // 9 for the board * 2 for the pieces
+  TTTState::Initialize(hash_table_size, hash_codes);
 
-  while (!game_state.IsTerminal())
+  for (int i = 0; i < 5; i++)
   {
-    Pair A, B, C;
-    int max_depth = 9 - turn;
-    if (turn % 2 == 0)
+    TTTState::Reset();
+    std::cout << "-----------GAME " << i << "----------" << std::endl;
+    TTTState game_state;
+    int turn = static_cast<int>(Rand64() % 7);
+    for (int t = 0; t < turn; t++)
     {
-      A = mAI->Minimax(&game_state, max_depth);
-      B = mAI->AlphaBeta(&game_state, max_depth);
-      C = mAI->Negascout(&game_state, max_depth);
+      Move move = static_cast<Uint8>(Rand64() % 9);
+      while (!game_state.IsLegalMove(move))
+        move = static_cast<Uint8>(Rand64() % 9);
 
-      CPPUNIT_ASSERT_EQUAL(A.first, B.first);
-      CPPUNIT_ASSERT_EQUAL(A.second, B.second);
-      CPPUNIT_ASSERT_EQUAL(A.first, C.first);
-      CPPUNIT_ASSERT_EQUAL(A.second, C.second);
-      CPPUNIT_ASSERT_MESSAGE("Losing move", A.first >= 0);
+      game_state.MakeMove(move);
+      if (game_state.IsTerminal())
+      {
+        game_state.UndoMove(move);
+        t--;
+      }
     }
-    else
-    {
-      A = mAI->Minimax(&game_state, 3);
-      B = mAI->AlphaBeta(&game_state, 3);
-      C = mAI->Negascout(&game_state, 3);
-
-      CPPUNIT_ASSERT_EQUAL(A.first, B.first);
-      CPPUNIT_ASSERT_EQUAL(A.second, B.second);
-      CPPUNIT_ASSERT_EQUAL(A.first, C.first);
-      CPPUNIT_ASSERT_EQUAL(A.second, C.second);
-    }
-    game_state.MakeMove(A.second);
     std::cout << "Turn: " << turn << std::endl;
     std::cout << game_state.ToString() << std::endl << std::endl;
-    turn++;
+
+    while (!game_state.IsTerminal())
+    {
+      Pair A, B, C;
+      int max_depth = 9 - turn;
+      if (turn % 2 == 0)
+      {
+        A = mAI->Minimax(&game_state, max_depth);
+        B = mAI->AlphaBeta(&game_state, max_depth);
+        C = mAI->Negascout(&game_state, max_depth);
+
+        CPPUNIT_ASSERT_EQUAL(A.first, B.first);
+        CPPUNIT_ASSERT_EQUAL(int(A.second), int(B.second));
+        CPPUNIT_ASSERT_EQUAL(A.first, C.first);
+        CPPUNIT_ASSERT_EQUAL(A.second, C.second);
+      }
+      else
+      {
+        // NOTE: We cannot use AlphaBeta here for depths < max_depth as it will
+        //       find superior values from AlphaBeta player 1's ttable
+        A = mAI->Minimax(&game_state, 2);
+        C = mAI->Negascout(&game_state, 2);
+
+        CPPUNIT_ASSERT_EQUAL(A.first, C.first);
+        CPPUNIT_ASSERT_EQUAL(int(A.second), int(C.second));
+      }
+      game_state.MakeMove(A.second);
+
+      turn++;
+      std::cout << "Turn: " << turn << std::endl;
+      std::cout << game_state.ToString() << std::endl << std::endl;
+    }
   }
 }
 
@@ -91,6 +116,7 @@ TTTState::TTTState()
   mBoard[CROSS] = 0x0;
   mBoard[CIRCLE] = 0x0;
   mSide = CROSS;
+  CreateHash();
 }
 
 bool TTTState::IsLegalMove(Move inMove)
@@ -103,6 +129,27 @@ bool TTTState::IsLegalMove(Move inMove)
     return true;
 
   return false;
+}
+
+bool TTTState::IsMateScore(int inScore)
+{
+  return (inScore > INF-255) || (inScore < -INF+255);
+}
+
+void TTTState::CreateHash()
+{
+  mHashKey = (HashType) 0;
+  for (int i = 0; i < 9; i++)
+  {
+    if ((mBoard[CROSS] & moves[i]) == moves[i])
+    {
+      mHashKey ^= sHashCodes[9*CROSS + i];
+    }
+    else if ((mBoard[CIRCLE] & moves[i]) == moves[i])
+    {
+      mHashKey ^= sHashCodes[9*CIRCLE + i];
+    }
+  }
 }
 
 bool TTTState::IsTerminal()
@@ -120,6 +167,7 @@ bool TTTState::IsTerminal()
 
 void TTTState::MakeMove(Move inMove)
 {
+  mHashKey ^= sHashCodes[9*mSide + inMove];
   mBoard[mSide] |= moves[inMove];
   mSide = Type(1^mSide);
 }
@@ -127,6 +175,7 @@ void TTTState::MakeMove(Move inMove)
 void TTTState::UndoMove(Move inMove)
 {
   mSide = Type(1^mSide);
+  mHashKey ^= sHashCodes[9*mSide + inMove];
   mBoard[mSide] &= ~(moves[inMove]);
 }
 
@@ -156,9 +205,6 @@ int TTTState::GetScore()
   static const unsigned short CORNERS = 0x145;
   static const unsigned short REST = ~(CENTER|CORNERS);
 
-  if ((mBoard[CROSS] | mBoard[CIRCLE]) == 0x1FF)
-    return 0;
-
   Type opp = Type(1^mSide);
 
   for (int j = 0; j < 8; j++)
@@ -168,6 +214,9 @@ int TTTState::GetScore()
     if ((mBoard[opp]&win_positions[j]) == win_positions[j])
       return -1000;
   }
+
+  if ((mBoard[CROSS] | mBoard[CIRCLE]) == 0x1FF)
+    return 0;
 
   return (BitCount(mBoard[mSide]&CENTER)  * 40 +
           BitCount(mBoard[mSide]&CORNERS) * 30 +
@@ -202,10 +251,11 @@ std::string TTTState::ToString()
       else
         s << " .";// << i*3+j;
     }
+    s << "  ";
+    for (int j = 0; j < 3; j++)
+      s << " " << i*3+j;
     s << "\n";
   }
 
   return s.str();
 }
-
-} // namespace asearch

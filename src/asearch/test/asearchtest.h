@@ -3,6 +3,8 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 #include "../state.h"
+#include <vector>
+#include <string>
 
 namespace asearch
 {
@@ -24,11 +26,13 @@ public:
   std::vector<Move> GetLegalMoves();
   void MakeMove(Move inMove);
   void UndoMove(Move inMove);
+  void CreateHash();
+  bool IsMateScore(int inScore);
   bool IsTerminal();
-  bool IsLegalMove(Move inMove);
   Value GetScore();
-  Value Quiescence(int inAlpha, int inBeta);
+  Value Quiescence(Value inAlpha, Value inBeta);
 
+  bool IsLegalMove(Move inMove);
   std::string ToString();
 
   unsigned short mBoard[2];

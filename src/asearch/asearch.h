@@ -1,7 +1,10 @@
 #ifndef ASEARCH_H
 #define ASEARCH_H
 
+#include "ttable.h"
 #include "state.h"
+
+#define INF 100000
 
 namespace asearch {
 
@@ -9,10 +12,7 @@ namespace asearch {
  * @class ASearch
  *
  * @brief
- * Adversarial Search functions for zero sum games.
- *
- * @details
- * Various methods for zero sum games:
+ * Adversarial Search functions for zero sum games:
  *  - Minimax
  *  - AlphaBeta
  *  - Principal Variation Search or Negascout
