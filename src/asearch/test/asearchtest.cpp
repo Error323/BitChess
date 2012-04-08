@@ -56,6 +56,7 @@ void ASearchTest::test_create()
       CPPUNIT_ASSERT_EQUAL(A.second, B.second);
       CPPUNIT_ASSERT_EQUAL(A.first, C.first);
       CPPUNIT_ASSERT_EQUAL(A.second, C.second);
+      CPPUNIT_ASSERT_MESSAGE("Losing move", A.first >= 0);
     }
     else
     {
