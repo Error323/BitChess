@@ -35,7 +35,7 @@ void TTable::Initialize(int inTableSize, int inNumHashCodes)
   for (int i = 0; i < inNumHashCodes; i++)
     sHashCodes[i] = Rand64();
 
-  sHashMask = (HashType) 0;
+  sHashMask = HashType(0);
   while ((inTableSize>>=1) > 0)
   {
     sHashMask <<= 1;
@@ -58,8 +58,8 @@ std::string TTable::PrintHashType(HashType inHashType)
 {
   std::string s;
   s.resize(64);
-  for (int i = 64; i >= 0; i--)
-    s += (HashType(1 << i) & inHashType) ? "1" : "0";
+  for (int i = 0; i < 64; i++)
+    s[63-i] = ((HashType(1) << HashType(i)) & inHashType) ? '1' : '0';
   return s;
 }
 
