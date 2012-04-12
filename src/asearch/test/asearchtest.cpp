@@ -45,10 +45,12 @@ void ASearchTest::test_create()
   int hash_codes = 18; // 9 for the board * 2 for the pieces
   TTTState::Initialize(hash_table_size, hash_codes);
 
-  for (int i = 0; i < 5; i++)
+  for (int game = 0; game < 5; game++)
   {
+    std::cout << "\n\n-----------------------------" << std::endl;
+    std::cout << "-----------GAME " << game << "------------" << std::endl;
+    std::cout << "-----------------------------" << std::endl;
     TTTState::Reset();
-    std::cout << "-----------GAME " << i << "----------" << std::endl;
     TTTState game_state;
     int turn = static_cast<int>(Rand64() % 7);
     for (int t = 0; t < turn; t++)
@@ -78,19 +80,19 @@ void ASearchTest::test_create()
         C = mAI->Negascout(&game_state, max_depth);
 
         CPPUNIT_ASSERT_EQUAL(A.first, B.first);
-        CPPUNIT_ASSERT_EQUAL(int(A.second), int(B.second));
+        CPPUNIT_ASSERT_EQUAL(A.second, B.second);
         CPPUNIT_ASSERT_EQUAL(A.first, C.first);
         CPPUNIT_ASSERT_EQUAL(A.second, C.second);
       }
       else
       {
-        // NOTE: We cannot use AlphaBeta here for depths < max_depth as it will
+        // NOTE: We cannot use Negascout here for depths < max_depth as it will
         //       find superior values from AlphaBeta player 1's ttable
         A = mAI->Minimax(&game_state, 2);
-        C = mAI->Negascout(&game_state, 2);
+        B = mAI->AlphaBeta(&game_state, 2);
 
-        CPPUNIT_ASSERT_EQUAL(A.first, C.first);
-        CPPUNIT_ASSERT_EQUAL(int(A.second), int(C.second));
+        CPPUNIT_ASSERT_EQUAL(A.first, B.first);
+        CPPUNIT_ASSERT_EQUAL(A.second, B.second);
       }
       game_state.MakeMove(A.second);
 
