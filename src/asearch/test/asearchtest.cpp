@@ -87,7 +87,7 @@ void ASearchTest::test_create()
       else
       {
         // NOTE: We cannot use Negascout here for depths < max_depth as it will
-        //       find superior values from AlphaBeta player 1's ttable
+        //       find superior values from Negascout's player 1 ttable
         A = mAI->Minimax(&game_state, 2);
         B = mAI->AlphaBeta(&game_state, 2);
 
@@ -159,10 +159,13 @@ bool TTTState::IsTerminal()
   if ((mBoard[CROSS] | mBoard[CIRCLE]) == 0x1FF)
     return true;
 
-  for (int i = 0; i < 2; i++)
-    for (int j = 0; j < 8; j++)
-      if ((mBoard[i]&win_positions[j]) == win_positions[j])
-        return true;
+  for (int j = 0; j < 8; j++)
+  {
+    if ((mBoard[CROSS]&win_positions[j]) == win_positions[j])
+      return true;
+    if ((mBoard[CIRCLE]&win_positions[j]) == win_positions[j])
+      return true;
+  }
 
   return false;
 }

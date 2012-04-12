@@ -31,9 +31,7 @@ Pair ASearch::Minimax(State *inState, int inMaxDepth)
       best.first = val;
       best.second = moves[i];
     }
-    Debug(Uint32(moves[i])<<":"<<val<<" ");
   }
-  DebugLine("");
   DebugLine("Minimax states visited:   " << mStatesVisited);
 
   if (best.second == -1)
