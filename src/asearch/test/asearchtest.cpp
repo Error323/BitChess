@@ -71,7 +71,7 @@ void ASearchTest::test_create()
 
     while (!game_state.IsTerminal())
     {
-      Pair A, B, C;
+      Move A, B, C;
       int max_depth = 9 - turn;
       if (turn % 2 == 0)
       {
@@ -79,10 +79,8 @@ void ASearchTest::test_create()
         B = mAI->AlphaBeta(&game_state, max_depth);
         C = mAI->Negascout(&game_state, max_depth);
 
-        CPPUNIT_ASSERT_EQUAL(A.first, B.first);
-        CPPUNIT_ASSERT_EQUAL(A.second, B.second);
-        CPPUNIT_ASSERT_EQUAL(A.first, C.first);
-        CPPUNIT_ASSERT_EQUAL(A.second, C.second);
+        CPPUNIT_ASSERT_EQUAL(A, B);
+        CPPUNIT_ASSERT_EQUAL(A, C);
       }
       else
       {
@@ -91,10 +89,9 @@ void ASearchTest::test_create()
         A = mAI->Minimax(&game_state, 2);
         B = mAI->AlphaBeta(&game_state, 2);
 
-        CPPUNIT_ASSERT_EQUAL(A.first, B.first);
-        CPPUNIT_ASSERT_EQUAL(A.second, B.second);
+        CPPUNIT_ASSERT_EQUAL(A, B);
       }
-      game_state.MakeMove(A.second);
+      game_state.MakeMove(A);
 
       turn++;
       std::cout << "Turn: " << turn << std::endl;
@@ -123,7 +120,7 @@ TTTState::TTTState()
 
 bool TTTState::IsLegalMove(Move inMove)
 {
-  if (inMove < 0 || inMove > 8)
+  if (inMove > Move(8))
     return false;
 
   unsigned short empty = ~(mBoard[CROSS] | mBoard[CIRCLE]);
@@ -133,7 +130,7 @@ bool TTTState::IsLegalMove(Move inMove)
   return false;
 }
 
-bool TTTState::IsMateScore(int inScore)
+bool TTTState::IsMateScore(Value inScore)
 {
   return (inScore > INF-255) || (inScore < -INF+255);
 }
@@ -204,7 +201,7 @@ int BitCount(unsigned short inVal)
   }
   return count;
 }
-int TTTState::GetScore()
+Value TTTState::GetScore()
 {
   static const unsigned short CENTER = 0x10;
   static const unsigned short CORNERS = 0x145;
@@ -232,7 +229,7 @@ int TTTState::GetScore()
           BitCount(mBoard[opp]&REST)      * 20);
 }
 
-int TTTState::Quiescence(int inAlpha, int inBeta)
+Value TTTState::Quiescence(Value inAlpha, Value inBeta)
 {
   (void) inAlpha;
   (void) inBeta;

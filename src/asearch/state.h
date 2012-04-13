@@ -35,7 +35,7 @@ public:
   virtual Value GetScore() = 0;
 
   /// Return the Quiescence heuristic value of the state given alpha and beta
-  virtual Value Quiescence(int inAlpha, int inBeta) = 0;
+  virtual Value Quiescence(Value inAlpha, Value inBeta) = 0;
 };
 
 } // namespace asearch

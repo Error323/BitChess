@@ -13,30 +13,29 @@ ASearch::~ASearch() {}
 //------------------------------------------------------------------------------
 // MINIMAX
 //------------------------------------------------------------------------------
-Pair ASearch::Minimax(State *inState, int inMaxDepth)
+Move ASearch::Minimax(State *inState, int inMaxDepth)
 {
   mStatesVisited = 0;
-  Pair best = std::make_pair<Value, Move>(-INF, -1);
+  Move best_move = -1;
+  Value best_score = -INF;
 
   std::vector<Move> moves = inState->GetLegalMoves();
   for (int i = 0, n = moves.size(); i < n; i++)
   {
     mStatesVisited++;
     inState->MakeMove(moves[i]);
-    Value val = -MinimaxValue(inState, inMaxDepth - 1);
+    Value score = -MinimaxValue(inState, inMaxDepth - 1);
     inState->UndoMove(moves[i]);
 
-    if (val > best.first)
+    if (score > best_score)
     {
-      best.first = val;
-      best.second = moves[i];
+      best_score = score;
+      best_move = moves[i];
     }
   }
   DebugLine("Minimax states visited:   " << mStatesVisited);
 
-  if (best.second == -1)
-    FatalLine("Invalid move returned.");
-  return best;
+  return best_move;
 }
 
 Value ASearch::MinimaxValue(State *inState, int inDepth)
@@ -46,59 +45,57 @@ Value ASearch::MinimaxValue(State *inState, int inDepth)
 
   mStatesVisited++;
 
-  Value best = -INF;
+  Value best_score = -INF;
   std::vector<Move> moves = inState->GetLegalMoves();
   for (int i = 0, n = moves.size(); i < n; i++)
   {
     inState->MakeMove(moves[i]);
-    Value val = -MinimaxValue(inState, inDepth - 1);
+    Value score = -MinimaxValue(inState, inDepth - 1);
     inState->UndoMove(moves[i]);
 
-    if (val > best)
-      best = val;
+    if (score > best_score)
+      best_score = score;
   }
 
-  return best;
+  return best_score;
 }
 
 //------------------------------------------------------------------------------
 // ALPHABETA
 //------------------------------------------------------------------------------
-Pair ASearch::AlphaBeta(State *inState, int inMaxDepth)
+Move ASearch::AlphaBeta(State *inState, int inMaxDepth)
 {
   mStatesVisited = 0;
-  Pair best = std::make_pair<Value, Move>(-INF, -1);
+  Move best_move = -1;
+  Value best_score = -INF;
 
   std::vector<Move> moves = inState->GetLegalMoves();
   for (int i = 0, n = moves.size(); i < n; i++)
   {
     mStatesVisited++;
     inState->MakeMove(moves[i]);
-    Value val = -AlphaBetaValue(inState, 2, inMaxDepth - 1, -INF, -best.first);
+    Value score = -AlphaBetaValue(inState, 2, inMaxDepth - 1, -INF, -best_score);
     inState->UndoMove(moves[i]);
 
-    if (val > best.first)
+    if (score > best_score)
     {
-      best.first = val;
-      best.second = moves[i];
+      best_score = score;
+      best_move = moves[i];
     }
   }
   DebugLine("AlphaBeta states visited: " << mStatesVisited);
 
-  if (best.second == -1)
-    FatalLine("Invalid move returned.");
-  return best;
+  return best_move;
 }
 
-Value ASearch::AlphaBetaValue(State *inState, int inPly, int inDepth, int inAlpha,
-                              int inBeta)
+Value ASearch::AlphaBetaValue(State *inState, int inPly, int inDepth, Value inAlpha,
+                              Value inBeta)
 {
   if (inDepth == 0 || inState->IsTerminal())
     return inState->Quiescence(inAlpha, inBeta);
 
   mStatesVisited++;
 
-  Pair pair;
   /*
   TTable::Flag flag = inState->Get(inDepth, inPly, pair);
   switch (flag)
@@ -117,11 +114,10 @@ Value ASearch::AlphaBetaValue(State *inState, int inPly, int inDepth, int inAlph
   for (int i = 0, n = moves.size(); i < n; i++)
   {
     inState->MakeMove(moves[i]);
-    pair.first = -AlphaBetaValue(inState, inPly + 1, inDepth - 1, -inBeta, -inAlpha);
-    pair.second = moves[i];
+    Value score = -AlphaBetaValue(inState, inPly + 1, inDepth - 1, -inBeta, -inAlpha);
     inState->UndoMove(moves[i]);
 
-    inAlpha = std::max<int>(pair.first, inAlpha);
+    inAlpha = std::max<Value>(score, inAlpha);
 
     if (inAlpha >= inBeta)
       break;
@@ -135,10 +131,11 @@ Value ASearch::AlphaBetaValue(State *inState, int inPly, int inDepth, int inAlph
 //------------------------------------------------------------------------------
 // NEGASCOUT
 //------------------------------------------------------------------------------
-Pair ASearch::Negascout(State *inState, int inMaxDepth)
+Move ASearch::Negascout(State *inState, int inMaxDepth)
 {
   mStatesVisited = 0;
-  Pair best = std::make_pair<Value, Move>(-INF, -1);
+  Move best_move = -1;
+  Value best_score = -INF;
 
   int beta = INF;
   std::vector<Move> moves = inState->GetLegalMoves();
@@ -146,40 +143,39 @@ Pair ASearch::Negascout(State *inState, int inMaxDepth)
   {
     mStatesVisited++;
     inState->MakeMove(moves[i]);
-    Value val = -NegascoutValue(inState, 2, inMaxDepth - 1, -beta, -best.first);
-    if (i > 0 && best.first < val && val < INF)
-      val = -NegascoutValue(inState, 2, inMaxDepth - 1, -INF, -best.first);
+    Value val = -NegascoutValue(inState, 2, inMaxDepth - 1, -beta, -best_score);
+    if (i > 0 && best_score < val && val < INF)
+      val = -NegascoutValue(inState, 2, inMaxDepth - 1, -INF, -best_score);
     inState->UndoMove(moves[i]);
 
-    if (val > best.first)
+    if (val > best_score)
     {
-      best.first = val;
-      best.second = moves[i];
+      best_score = val;
+      best_move = moves[i];
     }
-    beta = best.first + 1;
+    beta = best_score + 1;
   }
   DebugLine("Negascout states visited: " << mStatesVisited);
 
-  if (best.second == -1)
-    FatalLine("Invalid move returned.");
-  return best;
+  return best_move;
 }
 
-Value ASearch::NegascoutValue(State *inState, int inPly, int inDepth, int inAlpha,
-                              int inBeta)
+Value ASearch::NegascoutValue(State *inState, int inPly, int inDepth, Value inAlpha,
+                              Value inBeta)
 {
   if (inDepth == 0 || inState->IsTerminal())
     return inState->Quiescence(inAlpha, inBeta);
 
   mStatesVisited++;
 
-  Pair pair;
-  TTable::Flag flag = inState->Get(inDepth, inPly, pair);
+  Move move;
+  Value score;
+  TTable::Flag flag = inState->Get(inDepth, inPly, move, score);
   switch (flag)
   {
-    case TTable::EXACT: return pair.first;
+    case TTable::EXACT: return score;
 //    case TTable::UPPERBOUND: inBeta = std::min<int>(inBeta, pair.first); break;
-    case TTable::LOWERBOUND: inAlpha = std::max<int>(inAlpha, pair.first); break;
+    case TTable::LOWERBOUND: inAlpha = std::max<Value>(inAlpha, score); break;
     default: break;
   }
 
@@ -188,20 +184,20 @@ Value ASearch::NegascoutValue(State *inState, int inPly, int inDepth, int inAlph
   for (int i = 0, n = moves.size(); i < n; i++)
   {
     inState->MakeMove(moves[i]);
-    pair.first = -NegascoutValue(inState, inPly + 1, inDepth - 1, -beta, -inAlpha);
-    pair.second = moves[i];
-    if (i > 0 && inAlpha < pair.first && pair.first < inBeta)
-      pair.first = -NegascoutValue(inState, inPly + 1, inDepth - 1, -inBeta, -inAlpha);
+    move = moves[i];
+    score = -NegascoutValue(inState, inPly + 1, inDepth - 1, -beta, -inAlpha);
+    if (i > 0 && inAlpha < score && score < inBeta)
+      score = -NegascoutValue(inState, inPly + 1, inDepth - 1, -inBeta, -inAlpha);
     inState->UndoMove(moves[i]);
 
-    inAlpha = std::max<int>(inAlpha, pair.first);
+    inAlpha = std::max<int>(inAlpha, score);
     if (inAlpha >= inBeta)
       break;
 
     beta = inAlpha + 1;
   }
 
-  inState->Put(inDepth, inPly, inAlpha, inBeta, pair);
+  inState->Put(inDepth, inPly, inAlpha, inBeta, move, score);
 
   return inAlpha;
 }

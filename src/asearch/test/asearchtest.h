@@ -27,7 +27,7 @@ public:
   void MakeMove(Move inMove);
   void UndoMove(Move inMove);
   void CreateHash();
-  bool IsMateScore(int inScore);
+  bool IsMateScore(Value inScore);
   bool IsTerminal();
   Value GetScore();
   Value Quiescence(Value inAlpha, Value inBeta);

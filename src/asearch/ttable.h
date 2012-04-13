@@ -10,8 +10,7 @@
 namespace asearch {
 
 typedef Uint8 Move; ///< Actual move (index to a move table)
-typedef int Value; ///< Minimax value
-typedef std::pair<Value, Move> Pair; ///< Minimax Value and corresponding Move
+typedef Int16 Value; ///< Minimax value in {-32768, 32768}
 typedef Uint64 HashType; ///< 64 bit unsigned int hash type
 
 /**
@@ -45,7 +44,7 @@ public:
   virtual void CreateHash() = 0;
 
   /// Determine wether state is winning or losing
-  virtual bool IsMateScore(int inScore) = 0;
+  virtual bool IsMateScore(Value inScore) = 0;
 
   /// Initialize the hashtable and hashcodes. Ideally this should go in L3 cache
   static void Initialize(int inTableSize, int inNumHashCodes);
@@ -56,10 +55,10 @@ public:
   static std::string PrintHashType(HashType inHashType);
 
   /// Add an entry into the hash table
-  void Put(Uint8 inDepth, Uint8 inPly, Value inAlpha, Value inBeta, Pair inPair);
+  void Put(Uint8 inDepth, Uint8 inPly, Value inAlpha, Value inBeta, Move inMove, Value inScore);
 
   /// Retrieve a pair from the hash table and return the flag type
-  Flag Get(Uint8 inDepth, Uint8 inPly, Pair &outPair);
+  Flag Get(Uint8 inDepth, Uint8 inPly, Move &outMove, Value &outScore);
 
 protected:
   static Uint32 sHits; ///< Cache hits or Get() calls
@@ -74,7 +73,8 @@ protected:
 private:
   struct Entry {
     HashType mKey; ///< Hashkey of this entry
-    Pair mPair; ///< Best corresponding <Value, Move> pair
+    Move mMove; ///< Best move
+    Value mValue; ///< Best corresponding value
     Uint8 mFlag; ///< Entry flag type see Flags
     Uint8 mDepth; ///< Depth that the entry was calculated at
   } __attribute__((packed));

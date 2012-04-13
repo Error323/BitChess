@@ -4,7 +4,7 @@
 #include "ttable.h"
 #include "state.h"
 
-#define INF 100000
+#define INF Value(10000)
 
 namespace asearch {
 
@@ -24,13 +24,13 @@ public:
   ~ASearch();
 
   /// Minimax algorithm, searches entire game tree
-  Pair Minimax(State *inState, int inMaxDepth);
+  Move Minimax(State *inState, int inMaxDepth);
 
   /// Minimax algorithm, with alpha beta pruning
-  Pair AlphaBeta(State *inState, int inMaxDepth);
+  Move AlphaBeta(State *inState, int inMaxDepth);
 
   /// Minimax algorithm, with alpha beta pruning and search window
-  Pair Negascout(State *inState, int inMaxDepth);
+  Move Negascout(State *inState, int inMaxDepth);
 
 private:
   int mStatesVisited; ///< Number of states traversed
@@ -39,10 +39,10 @@ private:
   Value MinimaxValue(State *inState, int inDepth);
 
   /// Recursive subfunction
-  Value AlphaBetaValue(State *inState, int inPly, int inDepth, int inAlpha, int inBeta);
+  Value AlphaBetaValue(State *inState, int inPly, int inDepth, Value inAlpha, Value inBeta);
 
   /// Recursive subfunction
-  Value NegascoutValue(State *inState, int inPly, int inDepth, int inAlpha, int inBeta);
+  Value NegascoutValue(State *inState, int inPly, int inDepth, Value inAlpha, Value inBeta);
 };
 
 } // namespace asearch
