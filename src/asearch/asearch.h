@@ -4,7 +4,7 @@
 #include "ttable.h"
 #include "state.h"
 
-#define INF Value(10000)
+#define INF Score(30000)
 
 namespace asearch {
 
@@ -36,13 +36,13 @@ private:
   int mStatesVisited; ///< Number of states traversed
 
   /// Recursive subfunction
-  Value MinimaxValue(State *inState, int inDepth);
+  Score MinimaxValue(State *inState, int inDepth);
 
   /// Recursive subfunction
-  Value AlphaBetaValue(State *inState, int inPly, int inDepth, Value inAlpha, Value inBeta);
+  Score AlphaBetaValue(State *inState, int inPly, int inDepth, Score inAlpha, Score inBeta);
 
   /// Recursive subfunction
-  Value NegascoutValue(State *inState, int inPly, int inDepth, Value inAlpha, Value inBeta);
+  Score NegascoutValue(State *inState, int inPly, int inDepth, Score inAlpha, Score inBeta);
 };
 
 } // namespace asearch

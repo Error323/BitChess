@@ -130,7 +130,7 @@ bool TTTState::IsLegalMove(Move inMove)
   return false;
 }
 
-bool TTTState::IsMateScore(Value inScore)
+bool TTTState::IsMateScore(Score inScore)
 {
   return (inScore > INF-255) || (inScore < -INF+255);
 }
@@ -201,7 +201,7 @@ int BitCount(unsigned short inVal)
   }
   return count;
 }
-Value TTTState::GetScore()
+Score TTTState::GetScore()
 {
   static const unsigned short CENTER = 0x10;
   static const unsigned short CORNERS = 0x145;
@@ -229,7 +229,7 @@ Value TTTState::GetScore()
           BitCount(mBoard[opp]&REST)      * 20);
 }
 
-Value TTTState::Quiescence(Value inAlpha, Value inBeta)
+Score TTTState::Quiescence(Score inAlpha, Score inBeta)
 {
   (void) inAlpha;
   (void) inBeta;

@@ -63,7 +63,7 @@ std::string TTable::PrintHashType(HashType inHashType)
   return s;
 }
 
-void TTable::Put(Uint8 inDepth, Uint8 inPly, Value inAlpha, Value inBeta, Move inMove, Value inScore)
+void TTable::Put(Uint8 inDepth, Uint8 inPly, Score inAlpha, Score inBeta, Move inMove, Score inScore)
 {
   Entry &entry = sHashTable[(mHashKey & sHashMask)];
   if (entry.mFlag && entry.mKey != mHashKey)
@@ -88,7 +88,7 @@ void TTable::Put(Uint8 inDepth, Uint8 inPly, Value inAlpha, Value inBeta, Move i
     entry.mValue += (inScore > 0) ? inPly : -inPly;
 }
 
-TTable::Flag TTable::Get(Uint8 inDepth, Uint8 inPly, Move &outMove, Value &outScore)
+TTable::Flag TTable::Get(Uint8 inDepth, Uint8 inPly, Move &outMove, Score &outScore)
 {
   sHits++;
   Entry &entry = sHashTable[(mHashKey & sHashMask)];

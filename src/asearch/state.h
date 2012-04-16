@@ -22,6 +22,9 @@ public:
   /// Return all legal moves (indices to a move table defined elsewhere)
   virtual std::vector<Move> GetLegalMoves() = 0;
 
+  /// Return wether a move is legal for this state or not
+  virtual bool IsLegalMove(Move inMove) = 0;
+
   /// Apply a move on the current game state
   virtual void MakeMove(Move inMove) = 0;
 
@@ -32,10 +35,10 @@ public:
   virtual bool IsTerminal() = 0;
 
   /// Return the current heuristic value of the state for a player
-  virtual Value GetScore() = 0;
+  virtual Score GetScore() = 0;
 
   /// Return the Quiescence heuristic value of the state given alpha and beta
-  virtual Value Quiescence(Value inAlpha, Value inBeta) = 0;
+  virtual Score Quiescence(Score inAlpha, Score inBeta) = 0;
 };
 
 } // namespace asearch

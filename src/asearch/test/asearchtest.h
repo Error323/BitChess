@@ -27,10 +27,10 @@ public:
   void MakeMove(Move inMove);
   void UndoMove(Move inMove);
   void CreateHash();
-  bool IsMateScore(Value inScore);
+  bool IsMateScore(Score inScore);
   bool IsTerminal();
-  Value GetScore();
-  Value Quiescence(Value inAlpha, Value inBeta);
+  Score GetScore();
+  Score Quiescence(Score inAlpha, Score inBeta);
 
   bool IsLegalMove(Move inMove);
   std::string ToString();
