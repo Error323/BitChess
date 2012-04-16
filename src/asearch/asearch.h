@@ -36,7 +36,7 @@ private:
   int mStatesVisited; ///< Number of states traversed
 
   /// Recursive subfunction
-  Score MinimaxValue(State *inState, int inDepth);
+  Score MinimaxValue(State *inState, int inPly, int inDepth);
 
   /// Recursive subfunction
   Score AlphaBetaValue(State *inState, int inPly, int inDepth, Score inAlpha, Score inBeta);

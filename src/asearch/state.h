@@ -16,6 +16,13 @@ namespace asearch {
 class State : public TTable
 {
 public:
+  enum TerminalType {
+    NONE,
+    DRAW,
+    WON,
+    LOST
+  };
+
   State() {}
   virtual ~State() {}
 
@@ -32,13 +39,13 @@ public:
   virtual void UndoMove(Move inMove) = 0;
 
   /// Determine whether a state is terminal (i.e. game over)
-  virtual bool IsTerminal() = 0;
+  virtual TerminalType IsTerminal() = 0;
 
   /// Return the current heuristic value of the state for a player
-  virtual Score GetScore() = 0;
+  virtual Score GetScore(int inPly) = 0;
 
   /// Return the Quiescence heuristic value of the state given alpha and beta
-  virtual Score Quiescence(Score inAlpha, Score inBeta) = 0;
+  virtual Score Quiescence(Score inAlpha, Score inBeta, int inPly) = 0;
 };
 
 } // namespace asearch

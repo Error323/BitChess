@@ -28,13 +28,14 @@ public:
   void UndoMove(Move inMove);
   void CreateHash();
   bool IsMateScore(Score inScore);
-  bool IsTerminal();
-  Score GetScore();
-  Score Quiescence(Score inAlpha, Score inBeta);
+  TerminalType IsTerminal();
+  Score GetScore(int inPly);
+  Score Quiescence(Score inAlpha, Score inBeta, int inPly);
 
   bool IsLegalMove(Move inMove);
   std::string ToString();
 
+private:
   unsigned short mBoard[2];
   Type mSide;
 };

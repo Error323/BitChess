@@ -24,7 +24,7 @@ Move ASearch::Minimax(State *inState, int inMaxDepth)
   {
     mStatesVisited++;
     inState->MakeMove(moves[i]);
-    Score score = -MinimaxValue(inState, inMaxDepth - 1);
+    Score score = -MinimaxValue(inState, inMaxDepth - 1, 2);
     inState->UndoMove(moves[i]);
 
     if (score > best_score)
@@ -38,10 +38,10 @@ Move ASearch::Minimax(State *inState, int inMaxDepth)
   return best_move;
 }
 
-Score ASearch::MinimaxValue(State *inState, int inDepth)
+Score ASearch::MinimaxValue(State *inState, int inDepth, int inPly)
 {
   if (inDepth == 0 || inState->IsTerminal())
-    return inState->GetScore();
+    return inState->GetScore(inPly);
 
   mStatesVisited++;
 
@@ -50,7 +50,7 @@ Score ASearch::MinimaxValue(State *inState, int inDepth)
   for (int i = 0, n = moves.size(); i < n; i++)
   {
     inState->MakeMove(moves[i]);
-    Score score = -MinimaxValue(inState, inDepth - 1);
+    Score score = -MinimaxValue(inState, inDepth - 1, inPly + 1);
     inState->UndoMove(moves[i]);
 
     if (score > best_score)
@@ -92,7 +92,7 @@ Score ASearch::AlphaBetaValue(State *inState, int inPly, int inDepth, Score inAl
                               Score inBeta)
 {
   if (inDepth == 0 || inState->IsTerminal())
-    return inState->Quiescence(inAlpha, inBeta);
+    return inState->Quiescence(inAlpha, inBeta, inPly);
 
   mStatesVisited++;
 
@@ -164,7 +164,7 @@ Score ASearch::NegascoutValue(State *inState, int inPly, int inDepth, Score inAl
                               Score inBeta)
 {
   if (inDepth == 0 || inState->IsTerminal())
-    return inState->Quiescence(inAlpha, inBeta);
+    return inState->Quiescence(inAlpha, inBeta, inPly);
 
   mStatesVisited++;
 
@@ -174,7 +174,7 @@ Score ASearch::NegascoutValue(State *inState, int inPly, int inDepth, Score inAl
   switch (flag)
   {
     case TTable::EXACT: return score;
-//    case TTable::UPPERBOUND: inBeta = std::min<int>(inBeta, pair.first); break;
+//    case TTable::UPPERBOUND: inBeta = std::min<Score>(inBeta, score); break;
     case TTable::LOWERBOUND: inAlpha = std::max<Score>(inAlpha, score); break;
     default: break;
   }
