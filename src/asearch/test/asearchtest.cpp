@@ -86,7 +86,7 @@ void ASearchTest::test_create()
         C = mAI->Negascout(&game_state, max_depth);
 
         CPPUNIT_ASSERT_EQUAL(A, B);
-//        CPPUNIT_ASSERT_EQUAL(A, C);
+        CPPUNIT_ASSERT_EQUAL(A, C);
         game_state.MakeMove(C);
       }
       else

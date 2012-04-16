@@ -1,9 +1,11 @@
 #include "asearch.h"
 #include "state.h"
+#include "../utils/debugger.h"
 
 #include "../utils/verbose.h"
 
 #include <vector>
+#include <algorithm>
 
 namespace asearch {
 
@@ -171,16 +173,28 @@ Score ASearch::NegascoutValue(State *inState, int inPly, int inDepth, Score inAl
   Move move;
   Score score;
   TTable::Flag flag = inState->Get(inDepth, inPly, move, score);
+  Score beta = inBeta; // store initial search window
   switch (flag)
   {
     case TTable::EXACT: return score;
-//    case TTable::UPPERBOUND: inBeta = std::min<Score>(inBeta, score); break;
+    case TTable::UPPERBOUND: beta = std::min<Score>(beta, score); break;
     case TTable::LOWERBOUND: inAlpha = std::max<Score>(inAlpha, score); break;
     default: break;
   }
 
-  int beta = inBeta;
+  if (inAlpha >= inBeta)
+    return score;
+
   std::vector<Move> moves = inState->GetLegalMoves();
+
+  // If hash found, switch first move
+  if (flag)
+  {
+    std::vector<Move>::iterator i = std::find(moves.begin(), moves.end(), move);
+    std::swap<Move>(*i, moves[0]);
+  }
+
+  // Apply other moves
   for (int i = 0, n = moves.size(); i < n; i++)
   {
     inState->MakeMove(moves[i]);
@@ -197,7 +211,7 @@ Score ASearch::NegascoutValue(State *inState, int inPly, int inDepth, Score inAl
     beta = inAlpha + 1;
   }
 
-  inState->Put(inDepth, inPly, inAlpha, inBeta, move, score);
+  inState->Put(inDepth, inPly, inAlpha, beta, move, score);
 
   return inAlpha;
 }
