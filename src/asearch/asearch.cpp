@@ -98,20 +98,6 @@ Score ASearch::AlphaBetaValue(State *inState, int inPly, int inDepth, Score inAl
 
   mStatesVisited++;
 
-  /*
-  TTable::Flag flag = inState->Get(inDepth, inPly, pair);
-  switch (flag)
-  {
-    case TTable::EXACT: return pair.first;
-//    case TTable::UPPERBOUND: inBeta = std::min<int>(inBeta, pair.first); break;
-    case TTable::LOWERBOUND: inAlpha = std::max<int>(inAlpha, pair.first); break;
-    default: break;
-  }
-
-  if (inAlpha >= inBeta)
-    return inAlpha;
-  */
-
   std::vector<Move> moves = inState->GetLegalMoves();
   for (int i = 0, n = moves.size(); i < n; i++)
   {
@@ -124,8 +110,6 @@ Score ASearch::AlphaBetaValue(State *inState, int inPly, int inDepth, Score inAl
     if (inAlpha >= inBeta)
       break;
   }
-
-//  inState->Put(inDepth, inPly, inAlpha, inBeta, pair);
 
   return inAlpha;
 }
@@ -146,7 +130,7 @@ Move ASearch::Negascout(State *inState, int inMaxDepth)
     mStatesVisited++;
     inState->MakeMove(moves[i]);
     Score val = -NegascoutValue(inState, 2, inMaxDepth - 1, -beta, -best_score);
-    if (i > 0 && best_score < val && val < INF)
+    if (i > 0 && best_score < val)
       val = -NegascoutValue(inState, 2, inMaxDepth - 1, -INF, -best_score);
     inState->UndoMove(moves[i]);
 
@@ -162,6 +146,7 @@ Move ASearch::Negascout(State *inState, int inMaxDepth)
   return best_move;
 }
 
+/// As defined at: http://en.wikipedia.org/wiki/Negascout
 Score ASearch::NegascoutValue(State *inState, int inPly, int inDepth, Score inAlpha,
                               Score inBeta)
 {
@@ -194,7 +179,7 @@ Score ASearch::NegascoutValue(State *inState, int inPly, int inDepth, Score inAl
     std::swap<Move>(*i, moves[0]);
   }
 
-  // Apply other moves
+  // Apply moves
   for (int i = 0, n = moves.size(); i < n; i++)
   {
     inState->MakeMove(moves[i]);
