@@ -106,7 +106,6 @@ Score ASearch::AlphaBetaValue(State *inState, int inPly, int inDepth, Score inAl
     inState->UndoMove(moves[i]);
 
     inAlpha = std::max<Score>(score, inAlpha);
-
     if (inAlpha >= inBeta)
       break;
   }
@@ -147,8 +146,8 @@ Move ASearch::Negascout(State *inState, int inMaxDepth)
 }
 
 /// As defined at: http://en.wikipedia.org/wiki/Negascout
-Score ASearch::NegascoutValue(State *inState, int inPly, int inDepth, Score inAlpha,
-                              Score inBeta)
+Score ASearch::NegascoutValue(State *inState, int inPly, int inDepth,
+                              Score inAlpha, Score inBeta)
 {
   if (inDepth == 0 || inState->IsTerminal())
     return inState->Quiescence(inAlpha, inBeta, inPly);
@@ -189,7 +188,7 @@ Score ASearch::NegascoutValue(State *inState, int inPly, int inDepth, Score inAl
       score = -NegascoutValue(inState, inPly + 1, inDepth - 1, -inBeta, -inAlpha);
     inState->UndoMove(moves[i]);
 
-    inAlpha = std::max<int>(inAlpha, score);
+    inAlpha = std::max<Score>(inAlpha, score);
     if (inAlpha >= inBeta)
       break;
 
