@@ -4,6 +4,7 @@
 
 #include "../utils/verbose.h"
 
+#include <ctime>
 #include <vector>
 #include <algorithm>
 
@@ -11,6 +12,27 @@ namespace asearch {
 
 ASearch::ASearch() {}
 ASearch::~ASearch() {}
+
+//------------------------------------------------------------------------------
+// ITERATIVE DEEPENING
+//------------------------------------------------------------------------------
+Move ASearch::Iterate(State *inState, int inMaxDepth, int inTime)
+{
+  mStatesVisited = 0;
+  int max_depth = 0;
+  clock_t start_time = clock();
+  clock_t elapsed_time = 0;
+  Move best_move = -1;
+
+  while (max_depth <= inMaxDepth && elapsed_time < inTime)
+  {
+    max_depth++;
+    best_move = Negascout(inState, max_depth);
+    elapsed_time = difftime(start_time, clock()) * CLOCKS_PER_SEC;
+  }
+
+  return best_move;
+}
 
 //------------------------------------------------------------------------------
 // MINIMAX
@@ -118,7 +140,6 @@ Score ASearch::AlphaBetaValue(State *inState, int inPly, int inDepth, Score inAl
 //------------------------------------------------------------------------------
 Move ASearch::Negascout(State *inState, int inMaxDepth)
 {
-  mStatesVisited = 0;
   Move best_move = -1;
   Score best_score = -INF;
 

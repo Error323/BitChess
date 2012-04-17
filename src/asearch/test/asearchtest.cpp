@@ -83,7 +83,7 @@ void ASearchTest::test_create()
       {
         A = mAI->Minimax(&game_state, max_depth);
         B = mAI->AlphaBeta(&game_state, max_depth);
-        C = mAI->Negascout(&game_state, max_depth);
+        C = mAI->Iterate(&game_state, max_depth);
 
         CPPUNIT_ASSERT_EQUAL(A, B);
         CPPUNIT_ASSERT_EQUAL(A, C);

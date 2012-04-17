@@ -23,6 +23,9 @@ public:
   ASearch();
   ~ASearch();
 
+  /// Iterative deepening using Negascout, time in seconds
+  Move Iterate(State *inState, int inMaxDepth, int inTime=5);
+
   /// Minimax algorithm, searches entire game tree
   Move Minimax(State *inState, int inMaxDepth);
 
