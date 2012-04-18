@@ -13,16 +13,16 @@ CState::CState()
   mPieces[WHITE][KNIGHT] = C64(0x0000000000000042);
   mPieces[WHITE][BISHOP] = C64(0x0000000000000024);
   mPieces[WHITE][ROOK]   = C64(0x0000000000000081);
-  mPieces[WHITE][QUEEN]  = C64(0x0000000000000010);
-  mPieces[WHITE][KING]   = C64(0x0000000000000008);
+  mPieces[WHITE][QUEEN]  = C64(0x0000000000000008);
+  mPieces[WHITE][KING]   = C64(0x0000000000000010);
 
   mPieces[BLACK][EMPTY]  = C64(0x0000FFFFFFFFFFFF);
   mPieces[BLACK][PAWN]   = C64(0x00FF000000000000);
   mPieces[BLACK][KNIGHT] = C64(0x4200000000000000);
   mPieces[BLACK][BISHOP] = C64(0x2400000000000000);
   mPieces[BLACK][ROOK]   = C64(0x8100000000000000);
-  mPieces[BLACK][QUEEN]  = C64(0x1000000000000000);
-  mPieces[BLACK][KING]   = C64(0x0800000000000000);
+  mPieces[BLACK][QUEEN]  = C64(0x0800000000000000);
+  mPieces[BLACK][KING]   = C64(0x1000000000000000);
 
   mEP = -1;
   mFlags = 0;
@@ -102,17 +102,11 @@ std::string CState::ToString()
   else
     ss << "Black  C:";
 
-  if (mFlags & WHITE_KING_CASTLE)
-  {ss << "K"; spaces--;}
-  else
-  if (mFlags & WHITE_QUEEN_CASTLE)
-  {ss << "Q"; spaces--;}
+  if      (mFlags & WHITE_KING_CASTLE)  {ss << "K"; spaces--;}
+  else if (mFlags & WHITE_QUEEN_CASTLE) {ss << "Q"; spaces--;}
 
-  if (mFlags & BLACK_KING_CASTLE)
-  {ss << "k"; spaces--;}
-  else
-  if (mFlags & BLACK_QUEEN_CASTLE)
-  {ss << "q"; spaces--;}
+  if      (mFlags & BLACK_KING_CASTLE)  {ss << "k"; spaces--;}
+  else if (mFlags & BLACK_QUEEN_CASTLE) {ss << "q"; spaces--;}
 
   for (int i = 0; i < spaces; i++)
     ss << " ";
@@ -250,8 +244,12 @@ Uint8 transform(U64 b, U64 magic, int bits)
   return (Uint8)((b * magic) >> (64 - bits));
 }
 
-void CState::InitializeMoveTables()
+void CState::InitializeChessState()
 {
+  const int table_size = 8000*2; ///< 8000 entries per player
+  const int hash_codes = 2*7 + 4 + 2 + 1; ///< pieces, castletypes, ep, side
+  CState::Initialize(table_size, hash_codes);
+
   U64 mask;
   int n;
   for (Uint8 sq = 0; sq < 64; sq++)

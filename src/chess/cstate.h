@@ -76,7 +76,7 @@ public:
   Score Quiescence(Score inAlpha, Score inBeta, int inPly);
 
   /// Initialize all moves
-  static void InitializeMoveTables();
+  static void InitializeChessState();
 
 private:
   U64 mPieces[2][7]; ///< Piece positions (white, black) (pawn,...,king)
