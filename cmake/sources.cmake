@@ -39,7 +39,10 @@ set(cstatetest_SOURCES
   src/chess/test/main.cpp
   src/chess/test/cstatetest.cpp
 	src/chess/cstate.cpp
+	src/chess/magics.h
   src/bitboard/bitboard.cpp
+	src/asearch/ttable.cpp
+	src/asearch/state.h
   src/utils/types.h
   src/utils/verbose.cpp
   src/utils/random.c
