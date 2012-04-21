@@ -15,6 +15,10 @@ namespace bboard {
 typedef Uint64 U64;
 #define C64(BitBoard) BitBoard##ULL
 
+/// Returns index to a table, it's where the magic happens
+/// See http://www.rivalchess.com/magic-bitboards/ for details
+int Transform(U64 inBoard, U64 inMagic, int inBits);
+
 /// ...
 U64 Index2U64(int inIndex, int inBits, U64 inMask);
 
@@ -25,7 +29,7 @@ Uint8 PopLSB(U64 &inBoard);
 Uint8 LSBIndex(U64 inBoard);
 
 /// Count the number of set bits on a bitboard
-Uint8 CountBits(U64 inBoard);
+int CountBits(U64 inBoard);
 
 /// Representation of a bitboard
 std::string ToString(const U64 &inBoard);

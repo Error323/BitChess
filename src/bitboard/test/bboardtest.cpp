@@ -34,7 +34,7 @@ void BBoardTest::test_create()
     CPPUNIT_ASSERT_EQUAL(i, LSBIndex(lsb[i]));
   }
 
-  CPPUNIT_ASSERT_EQUAL(Uint8(32), CountBits(black));
+  CPPUNIT_ASSERT_EQUAL(32, CountBits(black));
 }
 
 void BBoardTest::setUp()

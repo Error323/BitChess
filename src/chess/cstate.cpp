@@ -1,8 +1,9 @@
 #include "cstate.h"
-#include "magics.h"
 
 #include <sstream>
 
+U64 CState::sBMask[64];
+U64 CState::sRMask[64];
 U64 CState::sBMoves[64][4096];
 U64 CState::sRMoves[64][4096];
 
@@ -28,6 +29,18 @@ CState::CState()
   mFlags = 0;
   mSide = WHITE;
   mIsCastled[WHITE] = mIsCastled[BLACK] = false;
+
+  for (int s = WHITE; s <= BLACK; s++)
+  {
+    mFriends[s] = C64(0);
+    for (int p = PAWN; p <= KING; p++)
+    {
+      mFriends[s] |= mPieces[s][p];
+    }
+  }
+  mOccupied = mFriends[WHITE] | mFriends[BLACK];
+
+  CreateHash();
 }
 
 std::vector<Move> CState::GetLegalMoves()
@@ -238,36 +251,33 @@ U64 batt(int sq, U64 block)
   return result;
 }
 
-
-Uint8 transform(U64 b, U64 magic, int bits)
-{
-  return (Uint8)((b * magic) >> (64 - bits));
-}
-
 void CState::InitializeChessState()
 {
   const int table_size = 8000*2; ///< 8000 entries per player
   const int hash_codes = 2*7 + 4 + 2 + 1; ///< pieces, castletypes, ep, side
   CState::Initialize(table_size, hash_codes);
 
-  U64 mask;
-  int n;
-  for (Uint8 sq = 0; sq < 64; sq++)
+  int n, j;
+  for (int sq = 0; sq < 64; sq++)
   {
-    mask = bmask(sq);
-    n = CountBits(mask);
+    // Initialize rook move table
+    sRMask[sq] = rmask(sq);
+    n = CountBits(sRMask[sq]);
     for (int i = 0; i < (1 << n); i++)
     {
-      U64 block = Index2U64(i, n, mask);
-      sBMoves[sq][i] = batt(sq, block);
+      U64 block = Index2U64(i, n, sRMask[sq]);
+      j = Transform(block, r_magic[sq], n);
+      sRMoves[sq][j] = ratt(sq, block);
     }
 
-    mask = rmask(sq);
-    n = CountBits(mask);
+    // Initialize bishop move table
+    sBMask[sq] = bmask(sq);
+    n = CountBits(sBMask[sq]);
     for (int i = 0; i < (1 << n); i++)
     {
-      U64 block = Index2U64(i, n, mask);
-      sRMoves[sq][i] = ratt(sq, block);
+      U64 block = Index2U64(i, n, sBMask[sq]);
+      j = Transform(block, b_magic[sq], n);
+      sBMoves[sq][i] = batt(sq, block);
     }
   }
 }

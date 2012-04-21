@@ -1,3 +1,7 @@
+#include "../bitboard/bitboard.h"
+
+using namespace bboard;
+
 /**
  * @headerfile magics
  *
@@ -70,7 +74,7 @@ const U64 r_magic[64] = {
   0x489a000810200402ULL,
   0x1004400080a13ULL,
   0x4000011008020084ULL,
-  0x26002114058042ULL,
+  0x26002114058042ULL
 };
 
 const U64 b_magic[64] = {
@@ -137,6 +141,6 @@ const U64 b_magic[64] = {
   0x1000042304105ULL,
   0x10008830412a00ULL,
   0x2520081090008908ULL,
-  0x40102000a0a60140ULL,
+  0x40102000a0a60140ULL
 };
 

@@ -22,7 +22,12 @@ std::string ToString(const U64 &inBoard)
 
 void Print(const U64 &inBoard)
 {
-  std::cout << ToString(inBoard);
+  std::cout << ToString(inBoard) << std::endl;
+}
+
+int Transform(U64 inBoard, U64 inMagic, int inBits)
+{
+  return int((inBoard * inMagic) >> (64 - inBits));
 }
 
 Uint8 PopLSB(U64 &inBoard)
@@ -49,7 +54,7 @@ Uint8 LSBIndex(U64 inBoard)
   return magic_table[((inBoard&-inBoard)*magic) >> 58];
 }
 
-Uint8 CountBits(U64 inBoard)
+int CountBits(U64 inBoard)
 {
   int i;
   for(i = 0; inBoard; i++, inBoard &= inBoard - 1);
