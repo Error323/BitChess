@@ -7,8 +7,6 @@ int main(int argc, char **argv)
 {
   (void) argc;
   (void) argv;
-
   NoticeLine(HUMAN_NAME);
-
   return 0;
 }

@@ -5,7 +5,8 @@
 
 #include <vector>
 
-namespace asearch {
+namespace asearch
+{
 
 /**
  * @abstract State
@@ -16,7 +17,8 @@ namespace asearch {
 class State : public TTable
 {
 public:
-  enum TerminalType {
+  enum TerminalType
+  {
     NONE,
     DRAW,
     WON,

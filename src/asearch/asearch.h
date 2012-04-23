@@ -6,7 +6,8 @@
 
 #define INF Score(30000)
 
-namespace asearch {
+namespace asearch
+{
 
 /**
  * @class ASearch
@@ -24,7 +25,7 @@ public:
   ~ASearch();
 
   /// Iterative deepening using Negascout, time in seconds
-  Move Iterate(State *inState, int inMaxDepth, int inTime=5);
+  Move Iterate(State *inState, int inMaxDepth, int inTime = 5);
 
   /// Minimax algorithm, searches entire game tree
   Move Minimax(State *inState, int inMaxDepth);

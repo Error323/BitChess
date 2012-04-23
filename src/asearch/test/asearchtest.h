@@ -15,7 +15,8 @@ class ASearch;
 class TTTState : public State
 {
 public:
-  enum Type {
+  enum Type
+  {
     CROSS  = 0,
     CIRCLE = 1
   };

@@ -33,23 +33,20 @@ const static unsigned short win_positions[8] =
 
 const static unsigned short moves[9] =
 {
-  1<<0, 1<<1, 1<<2,
-  1<<3, 1<<4, 1<<5,
-  1<<6, 1<<7, 1<<8
+  1 << 0, 1 << 1, 1 << 2,
+  1 << 3, 1 << 4, 1 << 5,
+  1 << 6, 1 << 7, 1 << 8
 };
 
 void ASearchTest::test_create()
 {
   std::cout << std::endl;
-
   int wins_player1 = 0;
   int wins_player2 = 0;
   int total_games  = 100;
-
-  int hash_table_size = 1024*64;
+  int hash_table_size = 1024 * 64;
   int hash_codes = 18; // 9 for the board * 2 for the pieces
   TTTState::Initialize(hash_table_size, hash_codes);
-
   for (int game = 0; game < total_games; game++)
   {
     std::cout << "\n\n-----------------------------" << std::endl;
@@ -63,7 +60,6 @@ void ASearchTest::test_create()
       Move move = static_cast<Uint8>(Rand64() % 9);
       while (!game_state.IsLegalMove(move))
         move = static_cast<Uint8>(Rand64() % 9);
-
       game_state.MakeMove(move);
       if (game_state.IsTerminal())
       {
@@ -73,7 +69,6 @@ void ASearchTest::test_create()
     }
     std::cout << "Turn: " << turn << std::endl;
     std::cout << game_state.ToString() << std::endl << std::endl;
-
     State::TerminalType ttype = game_state.IsTerminal();
     while (ttype == State::NONE)
     {
@@ -83,8 +78,7 @@ void ASearchTest::test_create()
       {
         A = mAI->Minimax(&game_state, max_depth);
         B = mAI->AlphaBeta(&game_state, max_depth);
-        C = mAI->Iterate(&game_state, max_depth);
-
+        C = mAI->Negascout(&game_state, max_depth);
         CPPUNIT_ASSERT_EQUAL(A, B);
         CPPUNIT_ASSERT_EQUAL(A, C);
         game_state.MakeMove(C);
@@ -95,29 +89,29 @@ void ASearchTest::test_create()
         //       find superior values from Negascout's player 1 ttable
         A = mAI->Minimax(&game_state, 2);
         B = mAI->AlphaBeta(&game_state, 2);
-
         CPPUNIT_ASSERT_EQUAL(A, B);
         game_state.MakeMove(A);
       }
-
       turn++;
       std::cout << "Turn: " << turn << std::endl;
       std::cout << game_state.ToString() << std::endl << std::endl;
       ttype = game_state.IsTerminal();
     }
-
     switch (ttype)
     {
-    case State::WON:  wins_player1++; break;
-    case State::LOST: wins_player2++; break;
-    default: break;
+    case State::WON:
+      wins_player1++;
+      break;
+    case State::LOST:
+      wins_player2++;
+      break;
+    default:
+      break;
     }
   }
-
   std::cout << "Player 1: " << wins_player1 << std::endl;
   std::cout << "Player 2: " << wins_player2 << std::endl;
   std::cout << "Draws   : " << (total_games - wins_player1 - wins_player2) << std::endl;
-
   CPPUNIT_ASSERT_EQUAL(100, total_games);
   CPPUNIT_ASSERT_EQUAL(40, wins_player1);
   CPPUNIT_ASSERT_EQUAL(9, wins_player2);
@@ -145,17 +139,15 @@ bool TTTState::IsLegalMove(Move inMove)
 {
   if (inMove > Move(8))
     return false;
-
   unsigned short empty = ~(mBoard[CROSS] | mBoard[CIRCLE]);
   if ((empty & moves[inMove]) == moves[inMove])
     return true;
-
   return false;
 }
 
 bool TTTState::IsMateScore(Score inScore)
 {
-  return (inScore > INF-255) || (inScore < -INF+255);
+  return (inScore > INF - 255) || (inScore < -INF + 255);
 }
 
 void TTTState::CreateHash()
@@ -165,11 +157,11 @@ void TTTState::CreateHash()
   {
     if ((mBoard[CROSS] & moves[i]) == moves[i])
     {
-      mHashKey ^= sHashCodes[9*CROSS + i];
+      mHashKey ^= sHashCodes[9 * CROSS + i];
     }
     else if ((mBoard[CIRCLE] & moves[i]) == moves[i])
     {
-      mHashKey ^= sHashCodes[9*CIRCLE + i];
+      mHashKey ^= sHashCodes[9 * CIRCLE + i];
     }
   }
 }
@@ -183,24 +175,22 @@ State::TerminalType TTTState::IsTerminal()
     if ((mBoard[CIRCLE]&win_positions[j]) == win_positions[j]) // always p2
       return LOST;
   }
-
   if ((mBoard[CROSS] | mBoard[CIRCLE]) == 0x1FF)
     return DRAW;
-
   return NONE;
 }
 
 void TTTState::MakeMove(Move inMove)
 {
-  mHashKey ^= sHashCodes[9*mSide + inMove];
+  mHashKey ^= sHashCodes[9 * mSide + inMove];
   mBoard[mSide] |= moves[inMove];
-  mSide = Type(1^mSide);
+  mSide = Type(1 ^ mSide);
 }
 
 void TTTState::UndoMove(Move inMove)
 {
-  mSide = Type(1^mSide);
-  mHashKey ^= sHashCodes[9*mSide + inMove];
+  mSide = Type(1 ^ mSide);
+  mHashKey ^= sHashCodes[9 * mSide + inMove];
   mBoard[mSide] &= ~(moves[inMove]);
 }
 
@@ -228,10 +218,8 @@ Score TTTState::GetScore(int inPly)
 {
   static const unsigned short CENTER = 0x10;
   static const unsigned short CORNERS = 0x145;
-  static const unsigned short REST = ~(CENTER|CORNERS);
-
-  Type opp = Type(1^mSide);
-
+  static const unsigned short REST = ~(CENTER | CORNERS);
+  Type opp = Type(1 ^ mSide);
   for (int j = 0; j < 8; j++)
   {
     if ((mBoard[mSide]&win_positions[j]) == win_positions[j])
@@ -239,17 +227,15 @@ Score TTTState::GetScore(int inPly)
     if ((mBoard[opp]&win_positions[j]) == win_positions[j])
       return -1000 + inPly;
   }
-
   if ((mBoard[CROSS] | mBoard[CIRCLE]) == 0x1FF)
     return 0;
-
-  return (BitCount(mBoard[mSide]&CENTER)  * 40 +
-          BitCount(mBoard[mSide]&CORNERS) * 30 +
-          BitCount(mBoard[mSide]&REST)    * 20)
-      -
-         (BitCount(mBoard[opp]&CENTER)    * 40 +
-          BitCount(mBoard[opp]&CORNERS)   * 30 +
-          BitCount(mBoard[opp]&REST)      * 20);
+  return (BitCount(mBoard[mSide] & CENTER)  * 40 +
+          BitCount(mBoard[mSide] & CORNERS) * 30 +
+          BitCount(mBoard[mSide] & REST)    * 20)
+         -
+         (BitCount(mBoard[opp] & CENTER)    * 40 +
+          BitCount(mBoard[opp] & CORNERS)   * 30 +
+          BitCount(mBoard[opp] & REST)      * 20);
 }
 
 Score TTTState::Quiescence(Score inAlpha, Score inBeta, int inPly)
@@ -262,11 +248,10 @@ Score TTTState::Quiescence(Score inAlpha, Score inBeta, int inPly)
 std::string TTTState::ToString()
 {
   std::stringstream s;
-
   for (int i = 0; i < 3; i++)
   {
-    unsigned char circles = mBoard[CIRCLE] >> ((i*3) & 0xf);
-    unsigned char crosses = mBoard[CROSS] >> ((i*3) & 0xf);
+    unsigned char circles = mBoard[CIRCLE] >> ((i * 3) & 0xf);
+    unsigned char crosses = mBoard[CROSS] >> ((i * 3) & 0xf);
     for (int j = 0; j < 3; j++)
     {
       if (((circles >> j) & 1) == 1)
@@ -278,9 +263,8 @@ std::string TTTState::ToString()
     }
     s << "  ";
     for (int j = 0; j < 3; j++)
-      s << " " << i*3+j;
+      s << " " << i * 3 + j;
     s << "\n";
   }
-
   return s.str();
 }

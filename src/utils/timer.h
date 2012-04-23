@@ -17,7 +17,8 @@
 #define NAME_SPACING 50
 #define CELL_SPACING 8
 
-class Timer {
+class Timer
+{
 
 public:
   Timer(rcString inName);

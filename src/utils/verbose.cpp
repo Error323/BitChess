@@ -5,7 +5,7 @@
 
 std::map<Verbose::Level, String> Verbose::sLevels;
 std::ofstream                    Verbose::sStream;
-Verbose*                         Verbose::sInstance = NULL;
+Verbose                         *Verbose::sInstance = NULL;
 bool                             Verbose::sShouldUseColor = false;
 
 #ifdef DEBUG
@@ -32,13 +32,12 @@ Verbose::~Verbose()
     sStream.close();
 }
 
-Verbose* Verbose::Instance()
+Verbose *Verbose::Instance()
 {
   if (sInstance == NULL)
   {
     if (sOutput & LOG)
       sStream.open("log.txt", std::ios::out);
-
     sLevels[DBG] = "DEBUG";
     sLevels[NTC] = "NOTICE";
     sLevels[WRN] = "WARNING";
@@ -49,12 +48,10 @@ Verbose* Verbose::Instance()
   return sInstance;
 }
 
-Verbose& Verbose::Print(rcString inMsg, Level inLevel)
+Verbose &Verbose::Print(rcString inMsg, Level inLevel)
 {
   if (inLevel < sMinLevel)
     return *this;
-  
-
   if (sOutput & LOG && sStream.is_open() && sStream.good())
   {
     if (mIsStartOfLine)
@@ -63,7 +60,6 @@ Verbose& Verbose::Print(rcString inMsg, Level inLevel)
       sStream << inMsg;
     sStream.flush();
   }
-
   if (sOutput & SCREEN)
   {
     std::string output;
@@ -73,22 +69,24 @@ Verbose& Verbose::Print(rcString inMsg, Level inLevel)
       output = Prefix(inLevel) + inMsg;
     else
       output = inMsg;
-
     switch (inLevel)
     {
-      case ERR: {
-        std::cerr << output << std::flush;
-        break;
-      }
-      case FTL: {
-        std::cerr << output << std::flush;
-        exit(EXIT_FAILURE);
-        break;
-      }
-      default: {
-        std::cout << output << std::flush;
-        break;
-      }
+    case ERR:
+    {
+      std::cerr << output << std::flush;
+      break;
+    }
+    case FTL:
+    {
+      std::cerr << output << std::flush;
+      exit(EXIT_FAILURE);
+      break;
+    }
+    default:
+    {
+      std::cout << output << std::flush;
+      break;
+    }
     }
   }
   mIsStartOfLine = (inMsg.find('\n') != std::string::npos);
@@ -106,15 +104,26 @@ String Verbose::ColorizeLevel(rcString inMsg, Verbose::Level inLevel)
   s << "\033[";
   switch (inLevel)
   {
-    case DBG: s << REGULAR << ";" << GREEN;  break;
-    case NTC: s << REGULAR << ";" << WHITE;  break;
-    case WRN: s << REGULAR << ";" << YELLOW; break;
-    case ERR: s << REGULAR << ";" << RED;    break;
-    case FTL: s << REGULAR << ";" << RED;    break;
-    default:  s << REGULAR << ";" << CYAN;   break;
+  case DBG:
+    s << REGULAR << ";" << GREEN;
+    break;
+  case NTC:
+    s << REGULAR << ";" << WHITE;
+    break;
+  case WRN:
+    s << REGULAR << ";" << YELLOW;
+    break;
+  case ERR:
+    s << REGULAR << ";" << RED;
+    break;
+  case FTL:
+    s << REGULAR << ";" << RED;
+    break;
+  default:
+    s << REGULAR << ";" << CYAN;
+    break;
   }
   s << "m" << inMsg << "\033[0m";
-
   return s.str();
 }
 
@@ -122,7 +131,6 @@ String Verbose::Colorize(rcString inMsg, Color inColor, Style inStyle)
 {
   if (!ShouldUseColor())
     return inMsg;
-
   std::stringstream s;
   s << "\033["
     << inStyle
@@ -131,22 +139,20 @@ String Verbose::Colorize(rcString inMsg, Color inColor, Style inStyle)
     << "m"
     << inMsg
     << "\033[0m";
-
   return s.str();
 }
 
-bool Verbose::ShouldUseColor() {
+bool Verbose::ShouldUseColor()
+{
 #if WIN32
   // On Windows the TERM variable is usually not set, but the
   // console there does support colors.
   return true;
 #else
   // On non-Windows platforms, we rely on the TERM variable.
-  const char* term = getenv("TERM");
-
+  const char *term = getenv("TERM");
   if (term == NULL)
     return false;
-
   const bool term_supports_color =
     strcmp(term, "xterm") >= 0 ||
     strcmp(term, "xterm-color") >= 0 ||
@@ -154,7 +160,6 @@ bool Verbose::ShouldUseColor() {
     strcmp(term, "screen") >= 0 ||
     strcmp(term, "linux") >= 0 ||
     strcmp(term, "cygwin") >= 0;
-
   return term_supports_color;
 #endif  // WIN32
 }

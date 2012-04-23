@@ -10,7 +10,8 @@ using namespace bboard;
  *  - http://chessprogramming.wikispaces.com/Magic+Bitboards
  *  - http://chessprogramming.wikispaces.com/Looking+for+Magics
  */
-const U64 r_magic[64] = {
+const U64 r_magic[64] =
+{
   0xa8002c000108020ULL,
   0x6c00049b0002001ULL,
   0x100200010090040ULL,
@@ -77,7 +78,8 @@ const U64 r_magic[64] = {
   0x26002114058042ULL
 };
 
-const U64 b_magic[64] = {
+const U64 b_magic[64] =
+{
   0x89a1121896040240ULL,
   0x2004844802002010ULL,
   0x2068080051921000ULL,

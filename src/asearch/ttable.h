@@ -7,7 +7,8 @@
 #include <utility>
 #include <string>
 
-namespace asearch {
+namespace asearch
+{
 
 typedef Uint8 Move; ///< Actual move (index to a move table)
 typedef Int16 Score; ///< Minimax value in {-32768, 32768}
@@ -22,7 +23,8 @@ typedef Uint64 HashType; ///< 64 bit unsigned int hash type
 class TTable
 {
 public:
-  enum Flag {
+  enum Flag
+  {
     INVALID, ///< Entry doesn't exist
     OUTDATED, ///< Entry's depth < current depth and not a mate score
     UPPERBOUND, ///< Entry's score <= alpha
@@ -71,7 +73,8 @@ protected:
   HashType mHashKey; ///< Actual hashkey of a state
 
 private:
-  struct Entry {
+  struct Entry
+  {
     HashType mKey; ///< Hashkey of this entry
     Move mMove; ///< Best move
     Score mValue; ///< Best corresponding value
