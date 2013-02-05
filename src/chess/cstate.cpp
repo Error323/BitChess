@@ -176,8 +176,8 @@ Score CState::Quiescence(Score inAlpha, Score inBeta, int inPly)
 
 void CState::InitializeChessState()
 {
-  const int table_size = 8000 * 2; ///< 8000 entries per player
-  const int hash_codes = 2 * 7 + 4 + 2 + 1; ///< pieces, castletypes, ep, side
+  const int table_size = 8000 * 2; // 8000 entries per player
+  const int hash_codes = 2 * 7 + 4 + 2 + 1; // pieces, castletypes, ep, side
   CState::Initialize(table_size, hash_codes);
   int n, j;
   for (int sq = 0; sq < 64; sq++)
