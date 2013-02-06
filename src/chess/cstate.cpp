@@ -204,6 +204,12 @@ void CState::InitializeChessState()
 
     // Initialize knight move table
     U64 knight = C64(1) << sq;
-    sKMoves[sq] = KnightAttack(knight);
+    sNMoves[sq] = KnightAttack(knight);
+
+    // Initialize king move table
+    sKMoves[sq] = C64(0);
+    for (int i = 0; i < 64; i++)
+      if (Distance(sq, i) == 1)
+        sKMoves[sq] |= SetMask(i);
   }
 }

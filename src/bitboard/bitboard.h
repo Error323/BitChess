@@ -2,6 +2,7 @@
 #define BITBOARD_H
 
 #include <string>
+#include <cmath>
 #include "../utils/types.h"
 
 /**
@@ -14,7 +15,15 @@ namespace bboard
 {
 
 typedef Uint64 U64;
+
 #define C64(BitBoard) BitBoard##ULL
+#define Rank(x) ((x)>>3)
+#define File(x) ((x)&7)
+#define Flip(x) ((x)^1)
+#define FileDistance(a, b) std::abs(File(a) - File(b))
+#define RankDistance(a, b) std::abs(Rank(a) - Rank(b))
+#define Distance(a, b) std::max(FileDistance(a,b), RankDistance(a,b))
+#define SetMask(sq) (C64(1) << sq)
 
 const int rook_bits[64] =
 {

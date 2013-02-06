@@ -52,6 +52,8 @@ void CStateTest::test_create()
   index = Transform(occ, b_magic[square], bishop_bits[square]);
   moves = CState::sBMoves[square][index];
   Print(moves & ~white);
+  Print(CState::sKMoves[0]);
+  Print(CState::sKMoves[20]);
 }
 
 void CStateTest::setUp()
