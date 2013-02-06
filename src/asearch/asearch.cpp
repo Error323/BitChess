@@ -24,12 +24,18 @@ Move ASearch::Iterate(State *inState, int inMaxDepth, int inTime)
   clock_t start_time = clock();
   clock_t elapsed_time = 0;
   Move best_move = -1;
+  std::vector<Move> moves = inState->GetLegalMoves();
+  mRootMoves.clear();
+  for (int i = 0, n = moves.size(); i < n; i++)
+    mRootMoves.push_back(std::make_pair(-INF, moves[i]));
+
   while (max_depth <= inMaxDepth && elapsed_time < inTime)
   {
     max_depth++;
     best_move = Negascout(inState, max_depth);
     elapsed_time = difftime(start_time, clock()) * CLOCKS_PER_SEC;
   }
+  DebugLine("Negascout states visited: " << mStatesVisited);
   return best_move;
 }
 
@@ -120,32 +126,32 @@ Score ASearch::AlphaBetaValue(State *inState, int inPly, int inDepth, Score inAl
   return inAlpha;
 }
 
+inline bool MoveSorter(const std::pair<Score, Move> &a, const std::pair<Score, Move> &b)
+{
+  return a.first > b.first;
+}
+
 //------------------------------------------------------------------------------
 // NEGASCOUT
 //------------------------------------------------------------------------------
 Move ASearch::Negascout(State *inState, int inMaxDepth)
 {
-  Move best_move = -1;
-  Score best_score = -INF;
   int beta = INF;
-  std::vector<Move> moves = inState->GetLegalMoves();
-  for (int i = 0, n = moves.size(); i < n; i++)
+  Score best_score = -INF;
+  for (int i = 0, n = mRootMoves.size(); i < n; i++)
   {
     mStatesVisited++;
-    inState->MakeMove(moves[i]);
-    Score val = -NegascoutValue(inState, 2, inMaxDepth - 1, -beta, -best_score);
-    if (i > 0 && best_score < val)
-      val = -NegascoutValue(inState, 2, inMaxDepth - 1, -INF, -best_score);
-    inState->UndoMove(moves[i]);
-    if (val > best_score)
-    {
-      best_score = val;
-      best_move = moves[i];
-    }
+    inState->MakeMove(mRootMoves[i].second);
+    mRootMoves[i].first = -NegascoutValue(inState, 2, inMaxDepth - 1, -beta, -best_score);
+    if (i > 0 && best_score < mRootMoves[i].first)
+      mRootMoves[i].first = -NegascoutValue(inState, 2, inMaxDepth - 1, -INF, -best_score);
+    inState->UndoMove(mRootMoves[i].second);
+    best_score = std::max<Score>(mRootMoves[i].first, best_score);
     beta = best_score + 1;
   }
-  DebugLine("Negascout states visited: " << mStatesVisited);
-  return best_move;
+  std::sort(mRootMoves.begin(), mRootMoves.end(), MoveSorter);
+  ASSERT(mRootMoves.front().first == best_score);
+  return mRootMoves.front().second;
 }
 
 /// As defined at: http://en.wikipedia.org/wiki/Negascout

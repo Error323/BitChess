@@ -3,6 +3,7 @@
 
 #include "ttable.h"
 #include "state.h"
+#include <utility>
 
 #define INF Score(30000)
 
@@ -38,6 +39,8 @@ public:
 
 private:
   int mStatesVisited; ///< Number of states traversed
+
+  std::vector<std::pair<Score, Move> > mRootMoves; ///< Root score/move pairs
 
   /// Recursive subfunction
   Score MinimaxValue(State *inState, int inPly, int inDepth);
