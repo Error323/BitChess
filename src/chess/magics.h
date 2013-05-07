@@ -1,3 +1,6 @@
+#ifndef MAGICS_HDR
+#define MAGICS_HDR
+
 #include "../bitboard/bitboard.h"
 
 using namespace bboard;
@@ -10,139 +13,134 @@ using namespace bboard;
  *  - http://chessprogramming.wikispaces.com/Magic+Bitboards
  *  - http://chessprogramming.wikispaces.com/Looking+for+Magics
  */
-const U64 r_magic[64] =
-{
-  0xa8002c000108020ULL,
-  0x6c00049b0002001ULL,
-  0x100200010090040ULL,
-  0x2480041000800801ULL,
-  0x280028004000800ULL,
-  0x900410008040022ULL,
-  0x280020001001080ULL,
-  0x2880002041000080ULL,
-  0xa000800080400034ULL,
-  0x4808020004000ULL,
-  0x2290802004801000ULL,
-  0x411000d00100020ULL,
-  0x402800800040080ULL,
-  0xb000401004208ULL,
-  0x2409000100040200ULL,
-  0x1002100004082ULL,
-  0x22878001e24000ULL,
-  0x1090810021004010ULL,
-  0x801030040200012ULL,
-  0x500808008001000ULL,
-  0xa08018014000880ULL,
-  0x8000808004000200ULL,
-  0x201008080010200ULL,
-  0x801020000441091ULL,
-  0x800080204005ULL,
-  0x1040200040100048ULL,
-  0x120200402082ULL,
-  0xd14880480100080ULL,
-  0x12040280080080ULL,
-  0x100040080020080ULL,
-  0x9020010080800200ULL,
-  0x813241200148449ULL,
-  0x491604001800080ULL,
-  0x100401000402001ULL,
-  0x4820010021001040ULL,
-  0x400402202000812ULL,
-  0x209009005000802ULL,
-  0x810800601800400ULL,
-  0x4301083214000150ULL,
-  0x204026458e001401ULL,
-  0x40204000808000ULL,
-  0x8001008040010020ULL,
-  0x8410820820420010ULL,
-  0x1003001000090020ULL,
-  0x804040008008080ULL,
-  0x12000810020004ULL,
-  0x1000100200040208ULL,
-  0x430000a044020001ULL,
-  0x280009023410300ULL,
-  0xe0100040002240ULL,
-  0x200100401700ULL,
-  0x2244100408008080ULL,
-  0x8000400801980ULL,
-  0x2000810040200ULL,
-  0x8010100228810400ULL,
-  0x2000009044210200ULL,
-  0x4080008040102101ULL,
-  0x40002080411d01ULL,
-  0x2005524060000901ULL,
-  0x502001008400422ULL,
-  0x489a000810200402ULL,
-  0x1004400080a13ULL,
-  0x4000011008020084ULL,
-  0x26002114058042ULL
+namespace magics {
+
+struct Magic {
+  U64 *location; ///< location in sAttackTable
+  U64 magic;     ///< magic hash
+  U64 premask;   ///< to mask relevant squares of both lines (no outer squares)
+  U64 postmask;  ///< attacks on the otherwise empty board
+} __attribute__((aligned));
+
+static std::vector<U64> sAttackTable;
+static Magic sBishopMagics[64];
+static Magic sRookMagics[64];
+
+static const U64 rook_magics[64] = {
+  0xd280024000822054ull, 0xd540054020011000ull, 0xd5000d0020004030ull,
+  0xd500050020700089ull, 0xd5000448000a3100ull, 0xd400820804001020ull,
+  0xd50007000408c200ull, 0xd200088100c40062ull, 0xd503801040002281ull,
+  0xd821c0100140e001ull, 0xd803802000895000ull, 0xd82a00120020c109ull,
+  0xd8408028005c0180ull, 0xd858804200805400ull, 0xd814000402500845ull,
+  0xd44e000408822543ull, 0xd408888001400323ull, 0xd890808020084008ull,
+  0xd80d420020803204ull, 0xd818a200105a4200ull, 0xd800808004020800ull,
+  0xd924808002000c01ull, 0xd8028c001806b021ull, 0xd6a81a0006940151ull,
+  0xd48981020020ca00ull, 0xdb00200040015002ull, 0xd8eac5010010a001ull,
+  0xd85900a300085000ull, 0xdb2e00920008a044ull, 0xd806000200109409ull,
+  0xda1068c400100209ull, 0xd624109200024407ull, 0xd443214010800280ull,
+  0xd901018925004000ull, 0xd9c0843002802002ull, 0xd8dae34901001001ull,
+  0xda0982c800801400ull, 0xd802004842000c10ull, 0xdb0200080a000904ull,
+  0xd400ca8432000141ull, 0xd7a581b140008000ull, 0xd89000402011c002ull,
+  0xd860022543010010ull, 0xda10002801818030ull, 0xd882040008008080ull,
+  0xd8820070044a0058ull, 0xd90a2846101c0025ull, 0xd4aa28870b460024ull,
+  0xd8fffe99fecfaa00ull, 0xdcfffe99fecfaa00ull, 0xdd7fffadff9c2e00ull,
+  0xdd3fffddffce9200ull, 0xdfffffe9ffe7ce00ull, 0xdffffff5fff3e600ull,
+  0xd822000415084600ull, 0xd90ffff5f63c96a0ull, 0xd5ffff2525125352ull,
+  0xd9fffeddfeedaeaeull, 0xdbbfffedffdeb1a2ull, 0xda7fffb9ffdfb5f6ull,
+  0xd91fffddffdbf4d6ull, 0xd62a001854101322ull, 0xd540261009089804ull,
+  0xd645fffecbfea79eull
 };
 
-const U64 b_magic[64] =
-{
-  0x89a1121896040240ULL,
-  0x2004844802002010ULL,
-  0x2068080051921000ULL,
-  0x62880a0220200808ULL,
-  0x4042004000000ULL,
-  0x100822020200011ULL,
-  0xc00444222012000aULL,
-  0x28808801216001ULL,
-  0x400492088408100ULL,
-  0x201c401040c0084ULL,
-  0x840800910a0010ULL,
-  0x82080240060ULL,
-  0x2000840504006000ULL,
-  0x30010c4108405004ULL,
-  0x1008005410080802ULL,
-  0x8144042209100900ULL,
-  0x208081020014400ULL,
-  0x4800201208ca00ULL,
-  0xf18140408012008ULL,
-  0x1004002802102001ULL,
-  0x841000820080811ULL,
-  0x40200200a42008ULL,
-  0x800054042000ULL,
-  0x88010400410c9000ULL,
-  0x520040470104290ULL,
-  0x1004040051500081ULL,
-  0x2002081833080021ULL,
-  0x400c00c010142ULL,
-  0x941408200c002000ULL,
-  0x658810000806011ULL,
-  0x188071040440a00ULL,
-  0x4800404002011c00ULL,
-  0x104442040404200ULL,
-  0x511080202091021ULL,
-  0x4022401120400ULL,
-  0x80c0040400080120ULL,
-  0x8040010040820802ULL,
-  0x480810700020090ULL,
-  0x102008e00040242ULL,
-  0x809005202050100ULL,
-  0x8002024220104080ULL,
-  0x431008804142000ULL,
-  0x19001802081400ULL,
-  0x200014208040080ULL,
-  0x3308082008200100ULL,
-  0x41010500040c020ULL,
-  0x4012020c04210308ULL,
-  0x208220a202004080ULL,
-  0x111040120082000ULL,
-  0x6803040141280a00ULL,
-  0x2101004202410000ULL,
-  0x8200000041108022ULL,
-  0x21082088000ULL,
-  0x2410204010040ULL,
-  0x40100400809000ULL,
-  0x822088220820214ULL,
-  0x40808090012004ULL,
-  0x910224040218c9ULL,
-  0x402814422015008ULL,
-  0x90014004842410ULL,
-  0x1000042304105ULL,
-  0x10008830412a00ULL,
-  0x2520081090008908ULL,
-  0x40102000a0a60140ULL
+static const U64 bishop_magics[64] = {
+  0xe808913004054080ull, 0xec100508008c8102ull, 0xec11010401060000ull,
+  0xec48160042010020ull, 0xec06021040102410ull, 0xec2e080229894003ull,
+  0xec02482450082002ull, 0xe821430800902482ull, 0xec06854430240102ull,
+  0xec0130304200c040ull, 0xec00080204002208ull, 0xec19090407008269ull,
+  0xee81021610040401ull, 0xee81021610040401ull, 0xee81021610040401ull,
+  0xec40098248080402ull, 0xee4044125c030424ull, 0xef03289042020c0cull,
+  0xe6f00505040284b1ull, 0xe408008b09430007ull, 0xe604104e0202040aull,
+  0xe490800140602020ull, 0xec21800044300801ull, 0xec82040120824810ull,
+  0xec04200840480300ull, 0xec08044060244082ull, 0xe4c28204500c0012ull,
+  0xdd280801008200feull, 0xdec1010033104012ull, 0xe401004042082000ull,
+  0xedc1244102084408ull, 0xec14012605069220ull, 0xee02922005702004ull,
+  0xec04252008180200ull, 0xe512054044040705ull, 0xdd12a00800c100d1ull,
+  0xdd04042400120090ull, 0xe4e5809500920111ull, 0xee01011a02011822ull,
+  0xec02120025004c00ull, 0xec1b906420021101ull, 0xed41041062890c02ull,
+  0xe60890c028061005ull, 0xe518222218028400ull, 0xe41050201040b208ull,
+  0xe410200800400022ull, 0xee20412212000082ull, 0xec180104108c1020ull,
+  0xee42084422088001ull, 0xee42084422088001ull, 0xec20904844100000ull,
+  0xec04008020980440ull, 0xec00521006020514ull, 0xec0e04200c110201ull,
+  0xec1004100461c080ull, 0xed1010611c408489ull, 0xe9c8c404141a0e06ull,
+  0xec1a4c211110108dull, 0xece000d106451008ull, 0xec00402000e18804ull,
+  0xed09000208210100ull, 0xec0e04200c110201ull, 0xec00411004088080ull,
+  0xe8408a1809122080ull
 };
 
+static const int sRookSharing[64] = {
+   0,  1,  2,  3,  4,  5,  6,  7,
+   1,  0,  3,  2,  5,  4,  7,  6,
+   8,  9, 10, 11, 12, 13, 14, 15,
+   9,  8, 11, 10, 13, 12, 15, 14,
+  16, 17, 18, 19, 20, 21, 22, 23,
+  17, 16, 19, 18, 21, 20, 23, 22,
+  24, 25, 26, 27, 28, 29, 30, 31,
+  25, 24, 27, 26, 29, 28, 31, 30
+};
+
+static const int sBishopSharing[64] = {
+  0,  2,  4,  4,  4,  4, 12, 14,
+  0,  2,  5,  5,  5,  5, 12, 14,
+  0,  2,  6,  6,  6,  6, 12, 14,
+  0,  2,  7,  7,  7,  7, 12, 14,
+  1,  3,  8,  8,  8,  8, 13, 15,
+  1,  3,  9,  9,  9,  9, 13, 15,
+  1,  3, 10, 10, 10, 10, 13, 15,
+  1,  3, 11, 11, 11, 11, 13, 15,
+};
+
+/// Returns attacks of the rook given occupancy board and square
+inline U64 RookAttacks(U64 board, const int square)
+{
+  board  &= sRookMagics[square].premask;
+  board  *= sRookMagics[square].magic;
+  board >>= sRookMagics[square].magic >> 58;
+
+  return sRookMagics[square].postmask &
+         sRookMagics[square].location[board];
+}
+
+/// Returns attacks of the bishop given occupancy board and square
+inline U64 BishopAttacks(U64 board, const int square)
+{
+  board  &= sBishopMagics[square].premask;
+  board  *= sBishopMagics[square].magic;
+  board >>= sBishopMagics[square].magic >> 58;
+
+  return sBishopMagics[square].postmask &
+         sBishopMagics[square].location[board];
+}
+
+/// Returns the rook's mask across the bitboard given the square
+U64 RookMask(int sq);
+
+/// Returns the bishop's mask across the bitboard given the square
+U64 BishopMask(int sq);
+
+/// Returns the rook's attack field given the blocking bitboard
+U64 RookAttack(int sq, U64 block);
+
+/// Returns the bishop's attack field given the blocking bitboard
+U64 BishopAttack(int sq, U64 block);
+
+/// Returns index to a move table, it's where the magic happens
+/// See http://www.rivalchess.com/magic-bitboards/ for details
+int Transform(U64 board, const U64 magic);
+
+/// Computes blocking bitboard from index
+U64 Index2U64(const int index, const int bits, U64 mask);
+
+void Initialize();
+
+}
+
+#endif // MAGICS_HDR

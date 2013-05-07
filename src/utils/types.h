@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+#include <stdint.h>
+
 #define DECLARE_HUNGARIAN(TYPE)                        \
   typedef       TYPE*                     p##TYPE;     \
   typedef       TYPE&                     r##TYPE;     \
@@ -48,44 +50,21 @@ DECLARE_HUNGARIAN(Char)
 typedef std::string      String;
 DECLARE_HUNGARIAN(String)
 
-//------------Unix: 32-bit/64-bit compatibility------------
-#ifndef WIN32
-#include <stdint.h>
-typedef int64_t          Int64;
-DECLARE_HUNGARIAN(Int64)
-typedef uint64_t         Uint64;
-DECLARE_HUNGARIAN(Uint64)
-typedef int32_t          Int32;
-DECLARE_HUNGARIAN(Int32)
-typedef uint32_t         Uint32;
-DECLARE_HUNGARIAN(Uint32)
-typedef int16_t          Int16;
-DECLARE_HUNGARIAN(Int16)
-typedef uint16_t         Uint16;
-DECLARE_HUNGARIAN(Uint16)
-typedef char             Int8;
-DECLARE_HUNGARIAN(Int8)
-typedef unsigned char    Uint8;
-DECLARE_HUNGARIAN(Uint8)
-
-//------------Win: 32-bit/64-bit compatibility-------------
-#else
-typedef __int64          Int64;
-DECLARE_HUNGARIAN(Int64)
-typedef unsigned __int64 Uint64;
-DECLARE_HUNGARIAN(Uint64)
-typedef __int32          Int32;
-DECLARE_HUNGARIAN(Int32)
-typedef unsigned int     Uint32;
-DECLARE_HUNGARIAN(Uint32)
-typedef __int16          Int16;
-DECLARE_HUNGARIAN(Int16)
-typedef unsigned __int16 Uint16;
-DECLARE_HUNGARIAN(Uint16)
-typedef __int8           Int8;
-DECLARE_HUNGARIAN(Int8)
-typedef unsigned __int8  Uint8;
-DECLARE_HUNGARIAN(Uint8)
-#endif // WIN32
+typedef int64_t          I64;
+DECLARE_HUNGARIAN(I64)
+typedef uint64_t         U64;
+DECLARE_HUNGARIAN(U64)
+typedef int32_t          I32;
+DECLARE_HUNGARIAN(I32)
+typedef uint32_t         U32;
+DECLARE_HUNGARIAN(U32)
+typedef int16_t          I16;
+DECLARE_HUNGARIAN(I16)
+typedef uint16_t         U16;
+DECLARE_HUNGARIAN(U16)
+typedef char             I8;
+DECLARE_HUNGARIAN(I8)
+typedef unsigned char    U8;
+DECLARE_HUNGARIAN(U8)
 
 #endif // TYPES_HDR

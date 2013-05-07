@@ -1,7 +1,7 @@
 #include "asearch.h"
 #include "state.h"
-#include "../utils/debugger.h"
 
+#include "../utils/debugger.h"
 #include "../utils/verbose.h"
 
 #include <ctime>

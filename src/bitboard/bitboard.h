@@ -4,6 +4,8 @@
 #include <string>
 #include <cmath>
 #include "../utils/types.h"
+#include <x86intrin.h>
+
 
 /**
  * @namespace bitboard
@@ -14,90 +16,67 @@
 namespace bboard
 {
 
-typedef Uint64 U64;
+#define C64(x) x##ull
 
-#define C64(BitBoard) BitBoard##ULL
+#define KING_START_POS C64(0x1000000000000010)
+#define NOT_A_FILE     C64(0xfefefefefefefefe)
+#define NOT_H_FILE     C64(0x7f7f7f7f7f7f7f7f)
+#define A_FILE         C64(0x0101010101010101)
+#define H_FILE         C64(0x8080808080808080)
+#define E_FILE         C64(0x1010101010101010)
+#define NOT_RANK_8     C64(0x00ffffffffffffff)
+#define NOT_RANK_1     C64(0xffffffffffffff00)
+#define RANK8          C64(0xff00000000000000)
+#define RANK1          C64(0x00000000000000ff)
+
 #define Rank(x) ((x)>>3)
 #define File(x) ((x)&7)
 #define Flip(x) ((x)^1)
-#define FileDistance(a, b) std::abs(File(a) - File(b))
-#define RankDistance(a, b) std::abs(Rank(a) - Rank(b))
+#define FileDistance(a, b) abs(File(a) - File(b))
+#define RankDistance(a, b) abs(Rank(a) - Rank(b))
 #define Distance(a, b) std::max(FileDistance(a,b), RankDistance(a,b))
-#define SetMask(sq) (C64(1) << sq)
+#define Set(sq) (C64(1) << (sq))
+#define Unset(sq) (~Set(sq))
+#define TurnOff(b, s) (b) &= Unset(s)
+#define TurnOn(b, s) (b) |= Set(s)
 
-const int rook_bits[64] =
-{
-  12, 11, 11, 11, 11, 11, 11, 12,
-  11, 10, 10, 10, 10, 10, 10, 11,
-  11, 10, 10, 10, 10, 10, 10, 11,
-  11, 10, 10, 10, 10, 10, 10, 11,
-  11, 10, 10, 10, 10, 10, 10, 11,
-  11, 10, 10, 10, 10, 10, 10, 11,
-  11, 10, 10, 10, 10, 10, 10, 11,
-  12, 11, 11, 11, 11, 11, 11, 12
-};
-
-const int bishop_bits[64] =
-{
-  6, 5, 5, 5, 5, 5, 5, 6,
-  5, 5, 5, 5, 5, 5, 5, 5,
-  5, 5, 7, 7, 7, 7, 5, 5,
-  5, 5, 7, 9, 9, 7, 5, 5,
-  5, 5, 7, 9, 9, 7, 5, 5,
-  5, 5, 7, 7, 7, 7, 5, 5,
-  5, 5, 5, 5, 5, 5, 5, 5,
-  6, 5, 5, 5, 5, 5, 5, 6
-};
-
-const U64 magic = 0x022fdd63cc95386d; ///< The DeBruin magic number
-const Uint8 magic_table[64] = ///< Indices for finding the LSB index of a board
-{
-   0,  1,  2, 53,  3,  7, 54, 27,
-   4, 38, 41,  8, 34, 55, 48, 28,
-  62,  5, 39, 46, 44, 42, 22,  9,
-  24, 35, 59, 56, 49, 18, 29, 11,
-  63, 52,  6, 26, 37, 40, 33, 47,
-  61, 45, 43, 21, 23, 58, 17, 10,
-  51, 25, 36, 32, 60, 20, 57, 16,
-  50, 31, 19, 15, 30, 14, 13, 12,
-};
-
-/// Returns the rook's mask across the bitboard given the square
-U64 RookMask(int sq);
-
-/// Returns the bishop's mask across the bitboard given the square
-U64 BishopMask(int sq);
-
-/// Returns the rook's attack field given the blocking bitboard
-U64 RookAttack(int sq, U64 block);
-
-/// Returns the bishop's attack field given the blocking bitboard
-U64 BishopAttack(int sq, U64 block);
-
-/// Returns the knight move locations for all bits that are set to 1
-U64 KnightAttack(U64 inKnights);
-
-/// Returns index to a move table, it's where the magic happens
-/// See http://www.rivalchess.com/magic-bitboards/ for details
-int Transform(U64 inBoard, U64 inMagic, int inBits);
-
-/// ...
-U64 Index2U64(int inIndex, int inBits, U64 inMask);
+#define SoutOne(x) ((x) >> 8)
+#define NortOne(x) ((x) << 8)
+#define EastOne(x) (((x) << 1) & NOT_A_FILE)
+#define WestOne(x) (((x) >> 1) & NOT_H_FILE)
+#define NoEaOne(x) (((x) << 9) & NOT_A_FILE)
+#define NoWeOne(x) (((x) << 7) & NOT_H_FILE)
+#define SoEaOne(x) (((x) >> 7) & NOT_A_FILE)
+#define SoWeOne(x) (((x) >> 9) & NOT_H_FILE)
 
 /// Pops off the least significant bit of the board and returns index
-int PopLSB(U64 &inBoard);
+inline int PopLSB(register U64 &b)
+{
+  int index = __bsfq(b);
+  b &= b - 1;
+  return index;
+}
 
 /// Find the index to the least significant bit using a debruin magic number
-int LSBIndex(U64 inBoard);
+inline int LSBIndex(register U64 b)
+{
+  return __bsfq(b);
+}
 
 /// Count the number of set bits on a bitboard
-int CountBits(U64 inBoard);
-
-/// Representation of a bitboard
-std::string ToString(const U64 &inBoard);
+inline int CountBits(register U64 b)
+{
+  return __popcntq(b);
+}
 
 /// Print a bitboard to stdout
-void Print(const U64 &inBoard);
+void Print1(const U64 board);
+
+/// Print 2 bitboards to stdout beside eachother
+void Print2(const U64 a, const U64 b);
+
+/// Print 3 bitboards to stdout beside eachother
+void Print3(const U64 a, const U64 b, const U64 c);
 
 } // namespace bboard
 

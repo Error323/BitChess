@@ -57,9 +57,9 @@ void ASearchTest::test_create()
     int turn = static_cast<int>(Rand64() % 7);
     for (int t = 0; t < turn; t++)
     {
-      Move move = static_cast<Uint8>(Rand64() % 9);
+      Move move = static_cast<U8>(Rand64() % 9);
       while (!game_state.IsLegalMove(move))
-        move = static_cast<Uint8>(Rand64() % 9);
+        move = static_cast<U8>(Rand64() % 9);
       game_state.MakeMove(move);
       if (game_state.IsTerminal())
       {
@@ -113,7 +113,7 @@ void ASearchTest::test_create()
   std::cout << "Player 2: " << wins_player2 << std::endl;
   std::cout << "Draws   : " << (total_games - wins_player1 - wins_player2) << std::endl;
   CPPUNIT_ASSERT_EQUAL(100, total_games);
-  CPPUNIT_ASSERT_EQUAL(40, wins_player1);
+  CPPUNIT_ASSERT_EQUAL(44, wins_player1);
   CPPUNIT_ASSERT_EQUAL(9, wins_player2);
 }
 

@@ -10,9 +10,9 @@
 namespace asearch
 {
 
-typedef Uint8 Move; ///< Actual move (index to a move table)
-typedef Int16 Score; ///< Minimax value in {-32768, 32768}
-typedef Uint64 HashType; ///< 64 bit unsigned int hash type
+typedef U32 Move; ///< Actual move (index to a move table)
+typedef I16 Score; ///< Minimax value in {-32768, 32768}
+typedef U64 HashType; ///< 64 bit unsigned int hash type
 
 /**
  * @abstract TTable
@@ -49,24 +49,25 @@ public:
   virtual bool IsMateScore(Score inScore) = 0;
 
   /// Initialize the hashtable and hashcodes. Ideally this should go in L3 cache
-  static void Initialize(int inTableSize, int inNumHashCodes);
+  static void Initialize(const U32 mbSize, const U32 numHashCodes);
 
   /// Set hashtable memory to 0, but don't free it
   static void Reset();
 
+  /// Return hashtype as binary string
   static std::string PrintHashType(HashType inHashType);
 
   /// Add an entry into the hash table
-  void Put(Uint8 inDepth, Uint8 inPly, Score inAlpha, Score inBeta, Move inMove, Score inScore);
+  void Put(U8 inDepth, U8 inPly, Score inAlpha, Score inBeta, Move inMove, Score inScore);
 
   /// Retrieve a pair from the hash table and return the flag type
-  Flag Get(Uint8 inDepth, Uint8 inPly, Move &outMove, Score &outScore);
+  Flag Get(U8 inDepth, U8 inPly, Move &outMove, Score &outScore);
 
 protected:
-  static Uint32 sHits; ///< Cache hits or Get() calls
-  static Uint32 sSuccessfullHits; ///< Cache hits with flag != INVALID
-  static Uint32 sCollisions; ///< Hashtable collisions
-  static Uint32 sHashSize; ///< Actual table size
+  static U32 sHits; ///< Cache hits or Get() calls
+  static U32 sSuccessfullHits; ///< Cache hits with flag != INVALID
+  static U32 sCollisions; ///< Hashtable collisions
+  static U32 sHashSize; ///< Actual table size
   static HashType sHashMask; ///< Hash mask for retracting table entries
   static std::vector<HashType> sHashCodes; ///< Random bitstrings used for hashing
 
@@ -78,9 +79,9 @@ private:
     HashType mKey; ///< Hashkey of this entry
     Move mMove; ///< Best move
     Score mValue; ///< Best corresponding value
-    Uint8 mFlag; ///< Entry flag type see Flags
-    Uint8 mDepth; ///< Depth that the entry was calculated at
-  } __attribute__((packed));
+    U8 mFlag; ///< Entry flag type see Flags
+    U8 mDepth; ///< Depth that the entry was calculated at
+  } __attribute__((aligned));
 
   static std::vector<Entry> sHashTable; ///< Hashtable containing entries
 };

@@ -55,8 +55,8 @@ public:
 
 private:
   static Verbose                *sInstance;
-  static Uint32                  sMinLevel;
-  static Uint32                  sOutput;
+  static U32                  sMinLevel;
+  static U32                  sOutput;
   static std::map<Level, String> sLevels;
   static std::ofstream           sStream;
   static bool                    sShouldUseColor;

@@ -2,13 +2,10 @@
 #define CSTATE_H
 
 #include "../asearch/state.h"
-#include "../bitboard/bitboard.h"
-#include "magics.h"
 
 #include <vector>
 
 using namespace asearch;
-using namespace bboard;
 
 /**
  * @class CState
@@ -44,18 +41,6 @@ public:
     WHITE_QUEEN_CASTLE = (1 << 1),
     BLACK_KING_CASTLE  = (1 << 2),
     BLACK_QUEEN_CASTLE = (1 << 3)
-  };
-
-  enum Square
-  {
-    A1, B1, C1, D1, E1, F1, G1, H1,
-    A2, B2, C2, D2, E2, F2, G2, H2,
-    A3, B3, C3, D3, E3, F3, G3, H3,
-    A4, B4, C4, D4, E4, F4, G4, H4,
-    A5, B5, C5, D5, E5, F5, G5, H5,
-    A6, B6, C6, D6, E6, F6, G6, H6,
-    A7, B7, C7, D7, E7, F7, G7, H7,
-    A8, B8, C8, D8, E8, F8, G8, H8
   };
 
   CState();
@@ -98,17 +83,9 @@ private:
   U64 mPieces[2][7]; ///< Piece positions (white, black) (pawn,...,king)
   U64 mFriends[2]; ///< Friendly positions (white, black)
   U64 mOccupied; ///< All occupied squares
-  Int8 mEP; ///< Location of en passant square
-  Uint8 mFlags; ///< Castling flags
-  bool mIsCastled[2]; ///< True if castling has occured
+  I8 mEP; ///< Location of en passant square
+  U8 mFlags; ///< Castling flags
   Side mSide; ///< Side that has to move (white, black)
-
-  static U64 sBMask[64]; ///< Bishop mask for all squares
-  static U64 sRMask[64]; ///< Rook mask for all squares
-  static U64 sBMoves[64][4096]; ///< All possible bishop moves
-  static U64 sRMoves[64][4096]; ///< All possible rook moves
-  static U64 sNMoves[64]; ///< All knight moves per square
-  static U64 sKMoves[64]; ///< All king moves per square
-};
+} __attribute__((aligned));
 
 #endif // CSTATE_H

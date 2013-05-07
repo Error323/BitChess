@@ -6,7 +6,6 @@ set(SOURCES
   src/utils/types.h
   src/utils/debugger.h
   src/utils/verbose.cpp
-  src/utils/timer.cpp
   src/utils/random.c
 )
 
@@ -22,7 +21,6 @@ set(asearchtest_SOURCES
   src/utils/types.h
   src/utils/debugger.h
   src/utils/verbose.cpp
-  src/utils/timer.cpp
   src/utils/random.c
 )
 
@@ -40,6 +38,7 @@ set(cstatetest_SOURCES
   src/chess/test/cstatetest.cpp
 	src/chess/cstate.cpp
 	src/chess/magics.h
+  src/chess/magics.cpp
   src/bitboard/bitboard.cpp
 	src/asearch/ttable.cpp
 	src/asearch/state.h

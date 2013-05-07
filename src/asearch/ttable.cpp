@@ -11,10 +11,10 @@ extern uint64_t Rand64();
 namespace asearch
 {
 
-Uint32 TTable::sHits = 0;
-Uint32 TTable::sSuccessfullHits = 0;
-Uint32 TTable::sCollisions = 0;
-Uint32 TTable::sHashSize = 0;
+U32 TTable::sHits = 0;
+U32 TTable::sSuccessfullHits = 0;
+U32 TTable::sCollisions = 0;
+U32 TTable::sHashSize = 0;
 HashType TTable::sHashMask = (HashType) 0;
 
 std::vector<HashType> TTable::sHashCodes;
@@ -27,21 +27,22 @@ TTable::~TTable()
   WarningLine("Collisions:       " << sCollisions);
 }
 
-void TTable::Initialize(int inTableSize, int inNumHashCodes)
+void TTable::Initialize(const U32 mbSize, const U32 numHashCodes)
 {
-  sHashTable.resize(inTableSize);
-  sHashCodes.resize(inNumHashCodes);
+  U32 entries = (mbSize*1024*1024) / sizeof(Entry);
+  sHashTable.resize(entries);
+  sHashCodes.resize(numHashCodes);
   Reset();
-  for (int i = 0; i < inNumHashCodes; i++)
+  for (int i = 0; i < numHashCodes; i++)
     sHashCodes[i] = Rand64();
   sHashMask = HashType(0);
-  while ((inTableSize >>= 1) > 0)
+  while ((entries >>= 1) > 0)
   {
     sHashMask <<= 1;
     sHashMask |= 1;
   }
   sHashSize = sHashMask + 1;
-  DebugLine("Allocated hashtable of " << round(sHashSize * sizeof(Entry) / 1024.0) << "K.");
+  DebugLine("Allocated hashtable of " << mbSize << "MB (" << sHashTable.size() << " entries)");
 }
 
 void TTable::Reset()
@@ -61,7 +62,7 @@ std::string TTable::PrintHashType(HashType inHashType)
   return s;
 }
 
-void TTable::Put(Uint8 inDepth, Uint8 inPly, Score inAlpha, Score inBeta, Move inMove, Score inScore)
+void TTable::Put(U8 inDepth, U8 inPly, Score inAlpha, Score inBeta, Move inMove, Score inScore)
 {
   Entry &entry = sHashTable[(mHashKey & sHashMask)];
   if (entry.mFlag && entry.mKey != mHashKey)
@@ -83,7 +84,7 @@ void TTable::Put(Uint8 inDepth, Uint8 inPly, Score inAlpha, Score inBeta, Move i
     entry.mValue += (inScore > 0) ? inPly : -inPly;
 }
 
-TTable::Flag TTable::Get(Uint8 inDepth, Uint8 inPly, Move &outMove, Score &outScore)
+TTable::Flag TTable::Get(U8 inDepth, U8 inPly, Move &outMove, Score &outScore)
 {
   sHits++;
   Entry &entry = sHashTable[(mHashKey & sHashMask)];

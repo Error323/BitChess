@@ -9,13 +9,13 @@ Verbose                         *Verbose::sInstance = NULL;
 bool                             Verbose::sShouldUseColor = false;
 
 #ifdef DEBUG
-Uint32 Verbose::sMinLevel = Verbose::DBG;
+U32 Verbose::sMinLevel = Verbose::DBG;
 #else
 Uint32 Verbose::sMinLevel = Verbose::NTC;
 #endif
 
 #ifndef VERBOSE_LOG_FILE
-Uint32 Verbose::sOutput = SCREEN | LOG;
+U32 Verbose::sOutput = SCREEN | LOG;
 #else
 Uint32 Verbose::sOutput = SCREEN;
 #endif

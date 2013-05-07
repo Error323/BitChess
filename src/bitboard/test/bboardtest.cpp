@@ -21,7 +21,7 @@ void BBoardTest::test_create()
   std::cout << std::endl;
   U64 black = C64(0xAA55AA55AA55AA55);
   U64 white = ~black;
-  Print(white);
+  Print1(white);
   CPPUNIT_ASSERT_EQUAL(1, LSBIndex(white));
   U64 lsb[64];
   for (int i = 0; i < 64; i++)
