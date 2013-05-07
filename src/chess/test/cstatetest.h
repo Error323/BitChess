@@ -8,6 +8,7 @@ class CStateTest : public CppUnit::TestFixture
 public:
   CPPUNIT_TEST_SUITE(CStateTest);
   CPPUNIT_TEST(test_create);
+  CPPUNIT_TEST(test_magics);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -19,6 +20,7 @@ public:
 
   // Test Methods
   void test_create();
+  void test_magics();
 };
 
 #endif // CSTATE_TEST_H

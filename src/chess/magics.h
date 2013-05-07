@@ -99,26 +99,10 @@ static const int sBishopSharing[64] = {
 };
 
 /// Returns attacks of the rook given occupancy board and square
-inline U64 RookAttacks(U64 board, const int square)
-{
-  board  &= sRookMagics[square].premask;
-  board  *= sRookMagics[square].magic;
-  board >>= sRookMagics[square].magic >> 58;
-
-  return sRookMagics[square].postmask &
-         sRookMagics[square].location[board];
-}
+U64 RookAttacks(U64 board, const int square);
 
 /// Returns attacks of the bishop given occupancy board and square
-inline U64 BishopAttacks(U64 board, const int square)
-{
-  board  &= sBishopMagics[square].premask;
-  board  *= sBishopMagics[square].magic;
-  board >>= sBishopMagics[square].magic >> 58;
-
-  return sBishopMagics[square].postmask &
-         sBishopMagics[square].location[board];
-}
+U64 BishopAttacks(U64 board, const int square);
 
 /// Returns the rook's mask across the bitboard given the square
 U64 RookMask(int sq);
