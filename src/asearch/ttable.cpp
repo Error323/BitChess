@@ -22,9 +22,9 @@ std::vector<TTable::Entry> TTable::sHashTable;
 
 TTable::~TTable()
 {
-  WarningLine("Hits:             " << sHits);
-  WarningLine("Successfull hits: " << sSuccessfullHits);
-  WarningLine("Collisions:       " << sCollisions);
+  DebugLine("Hits:             " << sHits);
+  DebugLine("Successfull hits: " << sSuccessfullHits);
+  DebugLine("Collisions:       " << sCollisions);
 }
 
 void TTable::Initialize(const U32 mbSize, const U32 numHashCodes)

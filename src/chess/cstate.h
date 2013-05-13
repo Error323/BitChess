@@ -44,6 +44,7 @@ public:
   };
 
   CState();
+  CState(const std::string &fen);
   ~CState() {}
 
   /// Return all legal moves (indices to a move table defined elsewhere)
@@ -90,6 +91,9 @@ private:
   U8 mFlags; ///< Castling flags
   Side mSide; ///< Side that has to move (white, black)
   U32 mPly; ///< Current half move
+
+  /// Reset the state
+  void Reset();
 } __attribute__((aligned));
 
 #endif // CSTATE_H

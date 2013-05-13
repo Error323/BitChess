@@ -6,10 +6,27 @@
 #include "../utils/verbose.h"
 
 #include <sstream>
+#include <cstring>
+
+#define FenError(fen,pos)              \
+  do {                                 \
+    ErrorLine("\nError: Invalid FEN"); \
+    ErrorLine("  " << fen);            \
+    for (int i = 0; i < pos; i++)      \
+      Error(" ");                      \
+    WarningLine("  ^");                \
+    exit(1);                           \
+  } while (0);
 
 CState::CState()
 {
   FromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+  CreateHash();
+}
+
+CState::CState(const std::string &fen)
+{
+  FromFen(fen);
   CreateHash();
 }
 
@@ -56,7 +73,7 @@ std::string CState::ToString()
   if (mSide == WHITE)
     ss << Verbose::Colorize("W", Verbose::WHITE, Verbose::BOLD) << " C:";
   else
-    ss << Verbose::Colorize("B", Verbose::RED, Verbose::BOLD) << " C:";
+    ss << Verbose::Colorize("B", Verbose::YELLOW, Verbose::BOLD) << " C:";
 
   if (mFlags & WHITE_KING_CASTLE)
   {
@@ -70,19 +87,19 @@ std::string CState::ToString()
   }
   if (mFlags & BLACK_KING_CASTLE)
   {
-    ss << Verbose::Colorize("K", Verbose::RED);
+    ss << Verbose::Colorize("k", Verbose::YELLOW);
     spaces--;
   }
   if (mFlags & BLACK_QUEEN_CASTLE)
   {
-    ss << Verbose::Colorize("Q", Verbose::RED);
+    ss << Verbose::Colorize("q", Verbose::YELLOW);
     spaces--;
   }
   for (int i = 0; i < spaces; i++)
     ss << " ";
   ss << "EP:";
   if (mEP > 0)
-    ss << char(mEP%8+65) << int(mEP/8+1);
+    ss << char(mEP%8+'a') << int(mEP/8+1);
   else
     ss << "  ";
   ss << " M:" << mPly;
@@ -99,13 +116,13 @@ std::string CState::ToString()
       else if (mPieces[WHITE][ROOK]   & Set(sq)) ss << Verbose::Colorize("R ", Verbose::WHITE);
       else if (mPieces[WHITE][QUEEN]  & Set(sq)) ss << Verbose::Colorize("Q ", Verbose::WHITE);
       else if (mPieces[WHITE][KING]   & Set(sq)) ss << Verbose::Colorize("K ", Verbose::WHITE);
-      else if (mPieces[BLACK][PAWN]   & Set(sq)) ss << Verbose::Colorize("P ", Verbose::RED);
-      else if (mPieces[BLACK][KNIGHT] & Set(sq)) ss << Verbose::Colorize("N ", Verbose::RED);
-      else if (mPieces[BLACK][BISHOP] & Set(sq)) ss << Verbose::Colorize("B ", Verbose::RED);
-      else if (mPieces[BLACK][ROOK]   & Set(sq)) ss << Verbose::Colorize("R ", Verbose::RED);
-      else if (mPieces[BLACK][QUEEN]  & Set(sq)) ss << Verbose::Colorize("Q ", Verbose::RED);
-      else if (mPieces[BLACK][KING]   & Set(sq)) ss << Verbose::Colorize("K ", Verbose::RED);
-      else if (BLACK_SQUARES & Set(sq))          ss << Verbose::Colorize(". ", Verbose::RED);
+      else if (mPieces[BLACK][PAWN]   & Set(sq)) ss << Verbose::Colorize("p ", Verbose::YELLOW);
+      else if (mPieces[BLACK][KNIGHT] & Set(sq)) ss << Verbose::Colorize("n ", Verbose::YELLOW);
+      else if (mPieces[BLACK][BISHOP] & Set(sq)) ss << Verbose::Colorize("b ", Verbose::YELLOW);
+      else if (mPieces[BLACK][ROOK]   & Set(sq)) ss << Verbose::Colorize("r ", Verbose::YELLOW);
+      else if (mPieces[BLACK][QUEEN]  & Set(sq)) ss << Verbose::Colorize("q ", Verbose::YELLOW);
+      else if (mPieces[BLACK][KING]   & Set(sq)) ss << Verbose::Colorize("k ", Verbose::YELLOW);
+      else if (BLACK_SQUARES & Set(sq))          ss << Verbose::Colorize(". ", Verbose::YELLOW);
       else                                       ss << Verbose::Colorize(". ", Verbose::WHITE);
     }
     ss << "\n";
@@ -132,7 +149,125 @@ Score CState::Quiescence(Score inAlpha, Score inBeta, int inPly)
 
 void CState::FromFen(const std::string &fen)
 {
+  Reset();
+  int pos;
+  int file, rank, sq;
+  int c;
 
+  pos = 0;
+  c = fen[pos];
+
+  // Determine piece placement
+  for (rank = 7; rank >= 0; rank--)
+  {
+    for (file = 0; file < 8;)
+    {
+      if (c >= '1' && c <= '8')
+        file += c - '0';
+      else
+      {
+        sq = rank * 8 + file;
+        switch (c)
+        {
+        case 'p': mPieces[BLACK][PAWN]   |= Set(sq); break;
+        case 'n': mPieces[BLACK][KNIGHT] |= Set(sq); break;
+        case 'b': mPieces[BLACK][BISHOP] |= Set(sq); break;
+        case 'r': mPieces[BLACK][ROOK]   |= Set(sq); break;
+        case 'q': mPieces[BLACK][QUEEN]  |= Set(sq); break;
+        case 'k': mPieces[BLACK][KING]   |= Set(sq); break;
+        case 'P': mPieces[WHITE][PAWN]   |= Set(sq); break;
+        case 'N': mPieces[WHITE][KNIGHT] |= Set(sq); break;
+        case 'B': mPieces[WHITE][BISHOP] |= Set(sq); break;
+        case 'R': mPieces[WHITE][ROOK]   |= Set(sq); break;
+        case 'Q': mPieces[WHITE][QUEEN]  |= Set(sq); break;
+        case 'K': mPieces[WHITE][KING]   |= Set(sq); break;
+        default: FenError(fen, pos);
+        }
+        file++;
+      }
+      c = fen[++pos];
+    }
+    if (rank > 0)
+    {
+      if (c != '/') FenError(fen, pos);
+      c = fen[++pos];
+    }
+  }
+
+  if (c != ' ') FenError(fen, pos);
+
+  // Determine side to move
+  c = fen[++pos];
+  switch (c)
+  {
+  case 'w': mSide = WHITE; break;
+  case 'b': mSide = BLACK; break;
+  default: FenError(fen, pos);
+  }
+
+  c = fen[++pos];
+  if (c != ' ') FenError(fen, pos);
+
+  // Determine castling rights
+  c = fen[++pos];
+  if (c == '-')
+    c = fen[++pos];
+  else
+  {
+    if (c == 'K')
+    {
+      mFlags |= WHITE_KING_CASTLE;
+      c = fen[++pos];
+    }
+    if (c == 'Q')
+    {
+      mFlags |= WHITE_QUEEN_CASTLE;
+      c = fen[++pos];
+    }
+    if (c == 'k')
+    {
+      mFlags |= BLACK_KING_CASTLE;
+      c = fen[++pos];
+    }
+    if (c == 'q')
+    {
+      mFlags |= BLACK_QUEEN_CASTLE;
+      c = fen[++pos];
+    }
+  }
+
+  if (c != ' ') FenError(fen, pos);
+
+  // Determine en passant pos
+  c = fen[++pos];
+  if (c == '-')
+    c = fen[++pos];
+  else
+  {
+    if (c < 'a' || c > 'h') FenError(fen, pos);
+    file = c - 'a';
+    c = fen[++pos];
+    if (c != (mSide ? '3' : '6')) FenError(fen, pos);
+    rank = c - '1';
+    c = fen[++pos];
+    mEP = rank * 8 + file;
+  }
+
+  // Determine if we are done
+  if (pos >= fen.size())
+    return;
+
+  if (c != ' ') FenError(fen, pos);
+  c = fen[++pos];
+
+  // Determine half move
+  if (!isdigit(c)) FenError(fen, pos);
+  mPly = atoi(&fen[pos]);
+}
+
+void CState::Reset()
+{
+  memset(this, 0, sizeof(CState));
 }
 
 void CState::InitializeChessState()

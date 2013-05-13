@@ -19,8 +19,10 @@ CStateTest::~CStateTest()
 void CStateTest::test_create()
 {
   CState::InitializeChessState();
-  CState state;
-  std::cout << state.ToString() << std::endl;
+  CState state1;
+  std::cout << state1.ToString() << std::endl;
+  CState state2("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
+  std::cout << state2.ToString() << std::endl;
 }
 
 void CStateTest::test_magics()
