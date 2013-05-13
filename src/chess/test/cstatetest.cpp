@@ -18,6 +18,9 @@ CStateTest::~CStateTest()
 
 void CStateTest::test_create()
 {
+  CState::InitializeChessState();
+  CState state;
+  std::cout << state.ToString() << std::endl;
 }
 
 void CStateTest::test_magics()

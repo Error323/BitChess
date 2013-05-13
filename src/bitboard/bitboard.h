@@ -28,6 +28,8 @@ namespace bboard
 #define NOT_RANK_1     C64(0xffffffffffffff00)
 #define RANK8          C64(0xff00000000000000)
 #define RANK1          C64(0x00000000000000ff)
+#define BLACK_SQUARES  C64(0xAA55AA55AA55AA55)
+#define WHITE_SQUARES  (~BLACK)
 
 #define Rank(x) ((x)>>3)
 #define File(x) ((x)&7)

@@ -76,6 +76,9 @@ public:
   /// Return the Quiescence heuristic value of the state given alpha and beta
   Score Quiescence(Score inAlpha, Score inBeta, int inPly);
 
+  /// Initialize chessboard from fen string
+  void FromFen(const std::string &fen);
+
   /// Initialize all moves
   static void InitializeChessState();
 
@@ -86,6 +89,7 @@ private:
   I8 mEP; ///< Location of en passant square
   U8 mFlags; ///< Castling flags
   Side mSide; ///< Side that has to move (white, black)
+  U32 mPly; ///< Current half move
 } __attribute__((aligned));
 
 #endif // CSTATE_H
