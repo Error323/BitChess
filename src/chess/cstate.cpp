@@ -39,6 +39,8 @@ CState::CState(const std::string &fen)
 std::vector<Move> CState::GetLegalMoves()
 {
   std::vector<Move> moves;
+  moves.reserve(256);
+
   return moves;
 }
 
