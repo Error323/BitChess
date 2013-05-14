@@ -44,7 +44,7 @@ void ASearchTest::test_create()
   int wins_player1 = 0;
   int wins_player2 = 0;
   int total_games  = 100;
-  int hash_table_size = 1024 * 64;
+  int hash_table_size = 16;
   int hash_codes = 18; // 9 for the board * 2 for the pieces
   TTTState::Initialize(hash_table_size, hash_codes);
   for (int game = 0; game < total_games; game++)
