@@ -1,7 +1,7 @@
 #ifndef DEBUGGER_HDR
 #define DEBUGGER_HDR
 
-#ifdef DEBUG
+#ifndef NDEBUG
 #include <cstdio>
 #include <cstdlib>
 
@@ -49,9 +49,9 @@
     fprintf(stderr, __VA_ARGS__); \
   } while (0)
 
-#else // DEBUG
+#else // NDEBUG
 #define ASSERT(cond)
 #define ASSERT_MSG(cond, ...)
-#endif // DEBUG
+#endif // NDEBUG
 
 #endif // DEBUGGER_HDR

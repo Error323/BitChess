@@ -58,17 +58,22 @@ Verbose &Verbose::Print(rcString inMsg, Level inLevel)
       sStream << Prefix(inLevel) << inMsg;
     else
       sStream << inMsg;
+
     sStream.flush();
   }
+
   if (sOutput & SCREEN)
   {
     std::string output;
+
     if (sShouldUseColor)
       output = ColorizeLevel(inMsg, inLevel);
-    else if (mIsStartOfLine)
+    else
+    if (mIsStartOfLine)
       output = Prefix(inLevel) + inMsg;
     else
       output = inMsg;
+
     switch (inLevel)
     {
     case ERR:
@@ -151,8 +156,10 @@ bool Verbose::ShouldUseColor()
 #else
   // On non-Windows platforms, we rely on the TERM variable.
   const char *term = getenv("TERM");
-  if (term == NULL)
+
+  if (term == NULL || !isatty(1))
     return false;
+
   const bool term_supports_color =
     strcmp(term, "xterm") >= 0 ||
     strcmp(term, "xterm-color") >= 0 ||
