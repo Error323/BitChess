@@ -40,7 +40,7 @@ std::vector<Move> CState::GetLegalMoves()
 {
   std::vector<Move> moves;
   moves.reserve(256);
-
+  moves.push_back(22ul);
   return moves;
 }
 

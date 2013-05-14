@@ -10,7 +10,7 @@ set(SOURCES
 )
 
 # === Test sources
-set(TESTS asearchtest bboardtest cstatetest cmovetest)
+set(TESTS asearchtest bboardtest cstatetest cmovetest perftest)
 
 set(asearchtest_SOURCES
   src/asearch/state.h
@@ -52,4 +52,16 @@ set(cmovetest_SOURCES
   src/chess/test/cmovetest.cpp
   src/chess/cmove.h
   src/utils/random.c
+)
+
+set(perftest_SOURCES
+  src/chess/test/main.cpp
+  src/chess/test/perftest.cpp
+  src/chess/cmove.h
+  src/chess/magics.cpp
+  src/chess/cstate.cpp
+  src/asearch/ttable.cpp
+  src/asearch/state.h
+  src/utils/types.h
+  src/utils/verbose.cpp
 )

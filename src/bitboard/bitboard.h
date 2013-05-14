@@ -51,7 +51,7 @@ namespace bboard
 #define SoEaOne(x) (((x) >> 7) & NOT_A_FILE)
 #define SoWeOne(x) (((x) >> 9) & NOT_H_FILE)
 
-/// Pops off the least significant bit of the board and returns index
+/// Pops the least significant bit of the board and returns index
 inline int PopLSB(register U64 &b)
 {
   int index = __bsfq(b);
@@ -59,7 +59,7 @@ inline int PopLSB(register U64 &b)
   return index;
 }
 
-/// Find the index to the least significant bit using a debruin magic number
+/// Find the index to the least significant bit
 inline int LSBIndex(register U64 b)
 {
   return __bsfq(b);
