@@ -4,9 +4,9 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 
 # === Compiler options
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long -Wno-variadic-macros")
-set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -DDEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g -DDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
 
 option(ENABLE_TESTS "Enable/disable test framework" ON)
 option(ENABLE_PROFILING "Enable/disable profiling" OFF)

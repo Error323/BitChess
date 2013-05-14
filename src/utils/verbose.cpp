@@ -2,22 +2,23 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <unistd.h>
 
 std::map<Verbose::Level, String> Verbose::sLevels;
 std::ofstream                    Verbose::sStream;
 Verbose                         *Verbose::sInstance = NULL;
 bool                             Verbose::sShouldUseColor = false;
 
-#ifdef DEBUG
+#ifndef NDEBUG
 U32 Verbose::sMinLevel = Verbose::DBG;
 #else
-Uint32 Verbose::sMinLevel = Verbose::NTC;
+U32 Verbose::sMinLevel = Verbose::NTC;
 #endif
 
 #ifndef VERBOSE_LOG_FILE
 U32 Verbose::sOutput = SCREEN | LOG;
 #else
-Uint32 Verbose::sOutput = SCREEN;
+U32 Verbose::sOutput = SCREEN;
 #endif
 
 Verbose::Verbose():
