@@ -84,15 +84,12 @@ public:
 
 private:
   U64 mPieces[2][6]; ///< Piece positions (white, black) (pawn,...,king)
-  U64 mFriends[2]; ///< Friendly positions (white, black)
-  U64 mOccupied; ///< All occupied squares
-  I8 mEP; ///< Location of en passant square
-  U8 mFlags; ///< Castling flags
-  Side mSide; ///< Side that has to move (white, black)
-  U32 mPly; ///< Current half move
-
-  /// Reset the state
-  void Reset();
+  U64 mFriends[2];   ///< Friendly positions (white, black)
+  U64 mOccupied;     ///< All occupied squares
+  I8 mEP;            ///< Location of en passant square
+  U8 mFlags;         ///< Castling flags
+  Side mSide;        ///< Side that has to move (white, black)
+  U32 mPly;          ///< Current half move
 } __attribute__((aligned));
 
 #endif // CSTATE_H

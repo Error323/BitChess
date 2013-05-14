@@ -189,7 +189,8 @@ std::string CState::ToString()
 
 void CState::FromFen(const std::string &fen)
 {
-  Reset();
+  memset(this, 0, sizeof(CState));
+
   U32 pos;
   int file, rank, sq;
   int c;
@@ -312,11 +313,6 @@ void CState::FromFen(const std::string &fen)
   // Determine half move
   if (!isdigit(c)) FenError(fen, pos);
   mPly = atoi(&fen[pos]);
-}
-
-void CState::Reset()
-{
-  memset(this, 0, sizeof(CState));
 }
 
 void CState::InitializeChessState()

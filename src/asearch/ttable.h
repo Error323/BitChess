@@ -76,12 +76,12 @@ protected:
 private:
   struct Entry
   {
-    HashType mKey; ///< Hashkey of this entry
-    Move mMove; ///< Best move
-    Score mValue; ///< Best corresponding value
-    U8 mFlag; ///< Entry flag type see Flags
-    U8 mDepth; ///< Depth that the entry was calculated at
-  } __attribute__((aligned));
+    HashType mKey;       ///< Hashkey of this entry
+    Score mValue;        ///< Best corresponding value
+    U8 mDepth      : 5;  ///< Depth that the entry was calculated at
+    U8 mFlag       : 3;  ///< Entry flag type see Flags
+    Move mMove     : 22; ///< Encoded move
+  } __attribute__((packed));
 
   static std::vector<Entry> sHashTable; ///< Hashtable containing entries
 };
