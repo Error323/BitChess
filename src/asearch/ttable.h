@@ -55,7 +55,7 @@ public:
   static void Reset();
 
   /// Return hashtype as binary string
-  static std::string PrintHashType(HashType inHashType);
+  static std::string Hash2String(HashType inHashType);
 
   /// Add an entry into the hash table
   void Put(U8 inDepth, U8 inPly, Score inAlpha, Score inBeta, Move inMove, Score inScore);

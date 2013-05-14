@@ -12,11 +12,17 @@
   do {                                 \
     ErrorLine("\nError: Invalid FEN"); \
     ErrorLine("  " << fen);            \
-    for (int i = 0; i < pos; i++)      \
+    for (U32 i = 0; i < pos; i++)      \
       Error(" ");                      \
     WarningLine("  ^");                \
     exit(1);                           \
   } while (0);
+
+// 12*64 + 16 + 8 + 1; // pieces, castletypes, ep, side
+#define HASH_PIECE(piece, sq) ((piece)*12+(sq))
+#define HASH_CASTLE(flag) (64*12+(flag))
+#define HASH_EP(sq) (64*12+16+File(sq))
+#define HASH_SIDE() (64*12+16+8+1)
 
 CState::CState()
 {
@@ -46,12 +52,10 @@ void CState::UndoMove(Move inMove)
   (void) inMove;
 }
 
-void CState::CreateHash()
-{
-}
-
 bool CState::IsLegalMove(Move inMove)
 {
+  (void) inMove;
+  return true;
 }
 
 bool CState::IsMateScore(Score inScore)
@@ -63,6 +67,55 @@ bool CState::IsMateScore(Score inScore)
 State::TerminalType CState::IsTerminal()
 {
   return NONE;
+}
+
+
+Score CState::GetScore(int inPly)
+{
+  (void) inPly;
+  Score score = 0;
+  return score;
+}
+
+Score CState::Quiescence(Score inAlpha, Score inBeta, int inPly)
+{
+  (void) inAlpha;
+  (void) inBeta;
+  (void) inPly;
+  Score score = 0;
+  return score;
+}
+
+void CState::CreateHash()
+{
+  mHashKey = HashType(0);
+  U64 pieces;
+  int square;
+
+  // Hash the pieces (64*12 possibilities)
+  for (int side = WHITE; side <= BLACK; side++)
+  {
+    for (int piece = PAWN; piece <= KING; piece++)
+    {
+      pieces = mPieces[side][piece];
+      while (pieces)
+      {
+        square = bboard::PopLSB(pieces);
+        mHashKey ^= sHashCodes[HASH_PIECE(piece, square)];
+      }
+    }
+  }
+
+  // Hash the castling types (16 possibilities)
+  mHashKey ^= sHashCodes[HASH_CASTLE(mFlags)];
+
+  // Hash the en passant types (8 possibilities)
+  if (mEP > 0)
+    mHashKey ^= sHashCodes[HASH_EP(mEP)];
+
+  // Hash the side types (1 possibilities)
+  if (mSide)
+    mHashKey ^= sHashCodes[HASH_SIDE()];
 }
 
 std::string CState::ToString()
@@ -128,29 +181,16 @@ std::string CState::ToString()
     ss << "\n";
   }
   ss << "\n   a b c d e f g h\n\n";
+#ifndef NDEBUG
+  ss << "0x" << std::hex << mHashKey << std::endl;
+#endif
   return ss.str();
-}
-
-Score CState::GetScore(int inPly)
-{
-  (void) inPly;
-  Score score = 0;
-  return score;
-}
-
-Score CState::Quiescence(Score inAlpha, Score inBeta, int inPly)
-{
-  (void) inAlpha;
-  (void) inBeta;
-  (void) inPly;
-  Score score = 0;
-  return score;
 }
 
 void CState::FromFen(const std::string &fen)
 {
   Reset();
-  int pos;
+  U32 pos;
   int file, rank, sq;
   int c;
 
@@ -191,6 +231,15 @@ void CState::FromFen(const std::string &fen)
     {
       if (c != '/') FenError(fen, pos);
       c = fen[++pos];
+    }
+  }
+
+  for (int s = WHITE; s <= BLACK; s++)
+  {
+    for (int p = PAWN; p <= KING; p++)
+    {
+      mOccupied |= mPieces[s][p];
+      mFriends[s] |= mPieces[s][p];
     }
   }
 
@@ -272,8 +321,8 @@ void CState::Reset()
 
 void CState::InitializeChessState()
 {
-  U32 table_size = 128; // 128 megabyte
-  U32 hash_codes = 2 * 6 + 4 + 17 + 2; // pieces, castletypes, ep, side
+  const U32 table_size = 128; // 128 megabyte
+  const U32 hash_codes = 12*64 + 16 + 8 + 1; // pieces, castletypes, ep, side
   CState::Initialize(table_size, hash_codes);
   magics::Initialize();
 }

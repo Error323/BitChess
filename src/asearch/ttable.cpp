@@ -33,7 +33,7 @@ void TTable::Initialize(const U32 mbSize, const U32 numHashCodes)
   sHashTable.resize(entries);
   sHashCodes.resize(numHashCodes);
   Reset();
-  for (int i = 0; i < numHashCodes; i++)
+  for (U32 i = 0; i < numHashCodes; i++)
     sHashCodes[i] = Rand64();
   sHashMask = HashType(0);
   while ((entries >>= 1) > 0)
@@ -53,7 +53,7 @@ void TTable::Reset()
   memset(&sHashTable[0], 0, sizeof(Entry)*sHashTable.size());
 }
 
-std::string TTable::PrintHashType(HashType inHashType)
+std::string TTable::Hash2String(HashType inHashType)
 {
   std::string s;
   s.resize(64);
