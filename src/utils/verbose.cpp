@@ -15,7 +15,7 @@ U32 Verbose::sMinLevel = Verbose::DBG;
 U32 Verbose::sMinLevel = Verbose::NTC;
 #endif
 
-#ifndef VERBOSE_LOG_FILE
+#ifdef VERBOSE_LOG_FILE
 U32 Verbose::sOutput = SCREEN | LOG;
 #else
 U32 Verbose::sOutput = SCREEN;
